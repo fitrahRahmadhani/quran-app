@@ -1,5 +1,25 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Inter';
+  src: url('./assets/font/Inter.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Amiri Quran';
+  src: url('./assets/font/AmiriQuran-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-quran: 'Amiri Quran', serif;
+
+  --color-primary: #0e5b4e;
+  --color-secondary: #c7a25a;
+  --color-accent: #efe3c8;
 }
