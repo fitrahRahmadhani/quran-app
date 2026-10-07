@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { BookOpen, House, ScrollText } from '@lucide/vue'
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
@@ -12,7 +13,9 @@ const menuOpen = ref(false)
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 w-full border-b border-[#173C35]/10 bg-white/85 backdrop-blur">
+  <header
+    class="sticky top-0 z-50 w-full border-b border-[#173C35]/10 bg-white/85 backdrop-blur hidden md:block"
+  >
     <div class="mx-auto flex h-20 max-w-360 items-center justify-between px-4 sm:px-6 lg:px-8">
       <RouterLink
         to="/"
@@ -22,7 +25,7 @@ const menuOpen = ref(false)
         <span class="text-2xl font-semibold tracking-tight text-[#173C35]">Quran</span>
       </RouterLink>
 
-      <nav class="hidden md:block" aria-label="Navigasi utama">
+      <nav class="hidden mx-auto lg:block" aria-label="Navigasi utama">
         <ul class="flex items-center gap-10">
           <li v-for="item in navItems" :key="item.to">
             <RouterLink
@@ -38,7 +41,7 @@ const menuOpen = ref(false)
 
       <button
         type="button"
-        class="grid size-11 place-items-center rounded-lg text-[#173C35] transition-colors hover:bg-[#173C35]/5 focus-visible:outline-2 focus-visible:outline-[#173C35] md:hidden"
+        class="grid size-11 place-items-center rounded-lg text-[#173C35] transition-colors hover:bg-[#173C35]/5 focus-visible:outline-2 focus-visible:outline-[#173C35] md:block lg:hidden"
         :aria-expanded="menuOpen"
         aria-controls="menu-mobile"
         :aria-label="menuOpen ? 'Tutup menu' : 'Buka menu'"
@@ -68,25 +71,46 @@ const menuOpen = ref(false)
         </svg>
       </button>
     </div>
-
-    <nav
-      v-show="menuOpen"
-      id="menu-mobile"
-      class="border-t border-[#173C35]/10 bg-white md:hidden"
-      aria-label="Navigasi utama"
-    >
-      <ul class="mx-auto max-w-360 space-y-1 px-4 py-3 sm:px-6">
-        <li v-for="item in navItems" :key="item.to">
-          <RouterLink
-            :to="item.to"
-            class="block rounded-lg px-3 py-3 font-medium text-gray-500 transition-colors hover:bg-[#173C35]/5 hover:text-[#173C35]"
-            active-class="!bg-[#173C35]/5 !text-[#173C35] font-semibold"
-            @click="menuOpen = false"
-          >
-            {{ item.label }}
-          </RouterLink>
+  </header>
+  <nav
+    v-show="menuOpen"
+    id="menu-tablet"
+    class="border-t border-[#173C35]/10 bg-white rounded-xl top-24 absolute right-5 w-fit md:block lg:hidden"
+    aria-label="Navigasi utama"
+  >
+    <ul class="mx-auto w-64 space-y-1 p-4">
+      <li v-for="item in navItems" :key="item.to">
+        <RouterLink
+          :to="item.to"
+          class="block rounded-lg px-3 py-3 font-medium text-gray-500 transition-colors hover:bg-[#173C35]/5 hover:text-[#173C35]"
+          active-class="!bg-[#173C35]/5 !text-[#173C35] font-semibold"
+          @click="menuOpen = false"
+        >
+          {{ item.label }}
+        </RouterLink>
+      </li>
+    </ul>
+  </nav>
+  <nav
+    id="menu-mobile"
+    class="w-full h-20 absolute bottom-0 bg-white md:hidden"
+    aria-label="Navigasi utama"
+  >
+    <div class="max-w-[80%] h-full mx-auto">
+      <ul class="h-full w-full flex items-center justify-between">
+        <li class="flex flex-col items-center gap-1 text-[#B8934A] rounded-full">
+          <House />
+          <span class="text-xs font-semibold text-[#173C35]">Beranda</span>
+        </li>
+        <li class="flex flex-col items-center gap-1 text-gray-300 rounded-full">
+          <BookOpen />
+          <span class="text-xs">Daftar Surah</span>
+        </li>
+        <li class="flex flex-col items-center gap-1 text-gray-300 rounded-full">
+          <ScrollText />
+          <span class="text-xs">Daftar Juz</span>
         </li>
       </ul>
-    </nav>
-  </header>
+    </div>
+  </nav>
 </template>
