@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BaseBadge from '@/components/ui/BaseBadge.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { Bookmark, Search } from '@lucide/vue'
 </script>
@@ -36,24 +37,9 @@ import { Bookmark, Search } from '@lucide/vue'
         </button>
       </label>
       <div class="mt-4 flex gap-2">
-        <button
-          type="button"
-          class="text-sm border border-primary/20 font-medium py-2 px-4 text-primary bg-primary/10 rounded-full"
-        >
-          Al Fatihah
-        </button>
-        <button
-          type="button"
-          class="text-sm border border-primary/20 font-medium py-2 px-4 text-primary bg-primary/10 rounded-full"
-        >
-          Al-Baqarah
-        </button>
-        <button
-          type="button"
-          class="text-sm border border-primary/20 font-medium py-2 px-4 text-primary bg-primary/10 rounded-full"
-        >
-          Yasin
-        </button>
+        <BaseBadge id="1" title="Al Fatihah" />
+        <BaseBadge id="2" title="Al Baqarah" />
+        <BaseBadge id="3" title="Yasin" />
       </div>
       <p class="text-sm font-medium text-primary text-right mt-2">Lihat semua surah →</p>
     </div>
