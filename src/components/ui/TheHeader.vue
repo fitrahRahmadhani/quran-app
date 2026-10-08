@@ -75,7 +75,7 @@ const menuOpen = ref(false)
   <nav
     v-show="menuOpen"
     id="menu-tablet"
-    class="border-t border-[#173C35]/10 bg-white rounded-xl top-24 absolute right-5 w-fit md:block lg:hidden"
+    class="border-t border-[#173C35]/10 bg-white rounded-xl top-24 fixed right-5 w-fit md:block lg:hidden"
     aria-label="Navigasi utama"
   >
     <ul class="mx-auto w-64 space-y-1 p-4">
@@ -93,7 +93,7 @@ const menuOpen = ref(false)
   </nav>
   <nav
     id="menu-mobile"
-    class="w-full h-20 absolute bottom-0 bg-white md:hidden"
+    class="w-full h-20 fixed bottom-0 bg-white md:hidden"
     aria-label="Navigasi utama"
   >
     <div class="max-w-[80%] h-full mx-auto">
