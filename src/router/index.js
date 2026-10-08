@@ -1,4 +1,4 @@
-import HomeView from '@/views/HomeView.vue'
+import BerandaView from '@/views/BerandaView.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -6,8 +6,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'today',
-      component: HomeView,
+      name: 'beranda',
+      component: BerandaView,
     },
   ],
 })

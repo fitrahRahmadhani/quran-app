@@ -22,7 +22,7 @@ const menuOpen = ref(false)
         class="flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#173C35]"
       >
         <img class="w-11" src="@/assets/logo/quran-logogram.svg" alt="" />
-        <span class="text-2xl font-semibold tracking-tight text-[#173C35]">Quran</span>
+        <h1 class="text-2xl font-semibold tracking-tight text-[#173C35]">Quran</h1>
       </RouterLink>
 
       <nav class="hidden mx-auto lg:block" aria-label="Navigasi utama">
