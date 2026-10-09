@@ -2,6 +2,9 @@
 import SurahCard from '@/components/surahs/SurahCard.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { Bookmark, Search } from '@lucide/vue'
+import axios from 'axios'
+
+// const surah = await axios.get('https://equran.id/api/v2/surat')
 </script>
 
 <template>
