@@ -23,8 +23,8 @@ import { Bookmark, Search } from '@lucide/vue'
         for="search-bar"
         class="flex items-center justify-between bg-white shadow-lg border border-gray-200 p-4 rounded-3xl gap-4 transition-all duration-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20"
       >
-        <div class="flex items-center gap-4 w-full">
-          <Search :size="20" class="text-gray-400" />
+        <div class="flex items-center gap-2 w-full">
+          <Search :size="22" class="text-primary" />
           <input
             id="search-bar"
             type="text"
@@ -44,7 +44,9 @@ import { Bookmark, Search } from '@lucide/vue'
         <BaseBadge id="2" title="Al Baqarah" />
         <BaseBadge id="3" title="Yasin" />
       </div>
-      <p class="text-sm font-medium text-primary text-right mt-2">Lihat semua surah →</p>
+      <RouterLink :to="{ name: 'surah' }">
+        <p class="text-sm font-medium text-primary text-right mt-2">Lihat semua surah →</p>
+      </RouterLink>
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-8">

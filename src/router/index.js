@@ -1,6 +1,6 @@
 import BerandaView from '@/views/BerandaView.vue'
-import SurahList from '@/views/SurahList.vue'
-import SurahRead from '@/views/SurahRead.vue'
+import Index from '@/views/surahs/Index.vue'
+import SurahRead from '@/views/surahs/SurahRead.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -14,7 +14,7 @@ const router = createRouter({
     {
       path: '/surah',
       name: 'surah',
-      component: SurahList,
+      component: Index,
     },
     {
       path: '/surah/:id',
