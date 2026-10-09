@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SurahCard from '@/components/surahs/SurahCard.vue'
+import BaseBadge from '@/components/ui/BaseBadge.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { Bookmark, Search } from '@lucide/vue'
 </script>
@@ -6,8 +8,10 @@ import { Bookmark, Search } from '@lucide/vue'
 <template>
   <DefaultLayout>
     <div class="text-primary text-center space-y-2">
-      <h2 class="text-5xl font-bold tracking-wide">Tempat untuk Kembali,</h2>
-      <h2 class="text-5xl font-bold tracking-wide">Kapan Pun Kamu Butuhkan</h2>
+      <h2 class="text-4xl mt-4 md:mt-12 lg:mt-2 md:text-5xl font-bold tracking-wide">
+        Tempat untuk Kembali,
+      </h2>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-wide">Kapan Pun Kamu Butuhkan</h2>
       <p class="text-lg mt-4">
         Temukan surah, baca ayat, dan luangkan waktu untuk merenungkan maknanya
       </p>
@@ -36,93 +40,46 @@ import { Bookmark, Search } from '@lucide/vue'
         </button>
       </label>
       <div class="mt-4 flex gap-2">
-        <button
-          type="button"
-          class="text-sm border border-primary/20 font-medium py-2 px-4 text-primary bg-primary/10 rounded-full"
-        >
-          Al Fatihah
-        </button>
-        <button
-          type="button"
-          class="text-sm border border-primary/20 font-medium py-2 px-4 text-primary bg-primary/10 rounded-full"
-        >
-          Al-Baqarah
-        </button>
-        <button
-          type="button"
-          class="text-sm border border-primary/20 font-medium py-2 px-4 text-primary bg-primary/10 rounded-full"
-        >
-          Yasin
-        </button>
+        <BaseBadge id="1" title="Al Fatihah" />
+        <BaseBadge id="2" title="Al Baqarah" />
+        <BaseBadge id="3" title="Yasin" />
       </div>
       <p class="text-sm font-medium text-primary text-right mt-2">Lihat semua surah →</p>
     </div>
 
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-      <div
-        class="flex p-4 bg-white rounded-2xl border border-gray-200 justify-between items-center"
-      >
-        <div class="flex items-center gap-4">
-          <div class="py-2 px-3 rounded-lg bg-primary/10 text-primary">
-            <p class="font-medium text-sm">01</p>
-          </div>
-          <div class="text-primary">
-            <p class="font-medium">Al Fatihah</p>
-            <p class="text-xs font-light">Pembuka • 7 ayat</p>
-          </div>
-        </div>
-        <div>
-          <p dir="rtl" lang="ar" class="font-quran text-3xl text-primary">الفاتحة</p>
-        </div>
-      </div>
-      <div
-        class="flex p-4 bg-white rounded-2xl border border-gray-200 justify-between items-center"
-      >
-        <div class="flex items-center gap-4">
-          <div class="py-2 px-3 rounded-lg bg-primary/10 text-primary">
-            <p class="font-medium text-sm">01</p>
-          </div>
-          <div class="text-primary">
-            <p class="font-medium">Al Fatihah</p>
-            <p class="text-xs font-light">Pembuka • 7 ayat</p>
-          </div>
-        </div>
-        <div>
-          <p dir="rtl" lang="ar" class="font-quran text-3xl text-primary">الفاتحة</p>
-        </div>
-      </div>
-      <div
-        class="flex p-4 bg-white rounded-2xl border border-gray-200 justify-between items-center"
-      >
-        <div class="flex items-center gap-4">
-          <div class="py-2 px-3 rounded-lg bg-primary/10 text-primary">
-            <p class="font-medium text-sm">01</p>
-          </div>
-          <div class="text-primary">
-            <p class="font-medium">Al Fatihah</p>
-            <p class="text-xs font-light">Pembuka • 7 ayat</p>
-          </div>
-        </div>
-        <div>
-          <p dir="rtl" lang="ar" class="font-quran text-3xl text-primary">الفاتحة</p>
-        </div>
-      </div>
-      <div
-        class="flex p-4 bg-white rounded-2xl border border-gray-200 justify-between items-center"
-      >
-        <div class="flex items-center gap-4">
-          <div class="py-2 px-3 rounded-lg bg-primary/10 text-primary">
-            <p class="font-medium text-sm">01</p>
-          </div>
-          <div class="text-primary">
-            <p class="font-medium">Al Fatihah</p>
-            <p class="text-xs font-light">Pembuka • 7 ayat</p>
-          </div>
-        </div>
-        <div>
-          <p dir="rtl" lang="ar" class="font-quran text-3xl text-primary">الفاتحة</p>
-        </div>
-      </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-8">
+      <SurahCard
+        id="1"
+        number="01"
+        title="Al Fatihah"
+        arabic-title="الفاتحة"
+        number-of-verses="7"
+        meaning="Pembuka"
+      />
+      <SurahCard
+        id="1"
+        number="01"
+        title="Al Fatihah"
+        arabic-title="الفاتحة"
+        number-of-verses="7"
+        meaning="Pembuka"
+      />
+      <SurahCard
+        id="1"
+        number="01"
+        title="Al Fatihah"
+        arabic-title="الفاتحة"
+        number-of-verses="7"
+        meaning="Pembuka"
+      />
+      <SurahCard
+        id="1"
+        number="01"
+        title="Al Fatihah"
+        arabic-title="الفاتحة"
+        number-of-verses="7"
+        meaning="Pembuka"
+      />
     </div>
     <div class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4">
       <div class="flex items-center gap-4">
