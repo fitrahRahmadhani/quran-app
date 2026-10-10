@@ -1,10 +1,10 @@
 <script setup>
 const props = defineProps({
-  id: String,
-  number: String,
+  id: Number,
+  number: Number,
   title: String,
   arabicTitle: String,
-  numberOfVerses: String,
+  numberOfVerses: Number,
   meaning: String,
 })
 </script>
@@ -23,8 +23,8 @@ const props = defineProps({
         <p class="text-xs font-light">{{ meaning }} • {{ numberOfVerses }} ayat</p>
       </div>
     </div>
-    <div>
-      <p dir="rtl" lang="ar" class="font-quran text-3xl text-primary">{{ arabicTitle }}</p>
-    </div>
+    <p dir="rtl" lang="ar" class="font-quran text-3xl text-primary self-baseline">
+      {{ arabicTitle }}
+    </p>
   </RouterLink>
 </template>
