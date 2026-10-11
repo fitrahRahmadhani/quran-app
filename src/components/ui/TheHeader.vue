@@ -1,5 +1,6 @@
-<script setup lang="ts">
+<script setup>
 import { BookOpen, House, ScrollText } from '@lucide/vue'
+import { onClickOutside } from '@vueuse/core'
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
@@ -10,6 +11,17 @@ const navItems = [
 ]
 
 const menuOpen = ref(false)
+
+const menuButton = ref(null)
+const menuTablet = ref(null)
+
+onClickOutside(
+  menuTablet,
+  () => {
+    menuOpen.value = false
+  },
+  { ignore: [menuButton] },
+)
 </script>
 
 <template>
@@ -40,10 +52,11 @@ const menuOpen = ref(false)
       </nav>
 
       <button
+        ref="menuButton"
         type="button"
         class="grid size-11 place-items-center rounded-lg text-[#173C35] transition-colors hover:bg-[#173C35]/5 focus-visible:outline-2 focus-visible:outline-[#173C35] md:block lg:hidden"
         :aria-expanded="menuOpen"
-        aria-controls="menu-mobile"
+        aria-controls="menu-tablet"
         :aria-label="menuOpen ? 'Tutup menu' : 'Buka menu'"
         @click="menuOpen = !menuOpen"
       >
@@ -72,25 +85,37 @@ const menuOpen = ref(false)
       </button>
     </div>
   </header>
-  <nav
-    v-show="menuOpen"
-    id="menu-tablet"
-    class="border-t border-[#173C35]/10 bg-white rounded-xl top-24 fixed right-5 w-fit md:block lg:hidden"
-    aria-label="Navigasi utama"
+
+  <Transition
+    enter-active-class="transition duration-200 ease-out"
+    enter-from-class="opacity-0 -translate-y-2 scale-95"
+    enter-to-class="opacity-100 translate-y-0 scale-100"
+    leave-active-class="transition duration-150 ease-in"
+    leave-from-class="opacity-100 translate-y-0 scale-100"
+    leave-to-class="opacity-0 -translate-y-2 scale-95"
   >
-    <ul class="mx-auto w-64 space-y-1 p-4">
-      <li v-for="item in navItems" :key="item.to">
-        <RouterLink
-          :to="item.to"
-          class="block rounded-lg px-3 py-3 font-medium text-gray-500 transition-colors hover:bg-[#173C35]/5 hover:text-[#173C35]"
-          active-class="!bg-[#173C35]/5 !text-[#173C35] font-semibold"
-          @click="menuOpen = false"
-        >
-          {{ item.label }}
-        </RouterLink>
-      </li>
-    </ul>
-  </nav>
+    <nav
+      ref="menuTablet"
+      v-show="menuOpen"
+      id="menu-tablet"
+      class="w-fit z-50 border-t border-[#173C35]/10 bg-white rounded-xl top-24 fixed right-5 shadow-lg origin-top-right md:block lg:hidden"
+      aria-label="Navigasi utama"
+    >
+      <ul class="mx-auto w-64 space-y-1 p-4">
+        <li v-for="item in navItems" :key="item.to">
+          <RouterLink
+            :to="item.to"
+            class="block rounded-lg px-3 py-3 font-medium text-gray-500 transition-colors hover:bg-[#173C35]/5 hover:text-[#173C35]"
+            active-class="!bg-[#173C35]/5 !text-[#173C35] font-semibold"
+            @click="menuOpen = false"
+          >
+            {{ item.label }}
+          </RouterLink>
+        </li>
+      </ul>
+    </nav>
+  </Transition>
+
   <nav
     id="menu-mobile"
     class="w-full h-20 fixed bottom-0 bg-white md:hidden"
