@@ -9,6 +9,13 @@ const router = useRouter()
 const inputSearch = ref('')
 const errorMessage = ref('')
 
+const suggestionSurahs = [
+  { id: 1, title: 'Al-Fatihah' },
+  { id: 2, title: 'Al-Kahfi' },
+  { id: 3, title: 'Yasin' },
+  { id: 4, title: "Al-Waqi'ah" },
+]
+
 function handleSearch() {
   const query = inputSearch.value.trim()
   if (!query) {
@@ -17,6 +24,10 @@ function handleSearch() {
   }
   errorMessage.value = ''
   router.push({ name: 'surah', query: { q: query } })
+}
+
+function handleSuggestion(value) {
+  inputSearch.value = value
 }
 </script>
 
@@ -65,18 +76,25 @@ function handleSearch() {
       <p v-if="errorMessage" class="text-sm text-red-500 mt-2 ml-2" role="alert">
         {{ errorMessage }}
       </p>
-      <div class="mt-4 flex gap-2">
-        <BaseBadge id="1" title="Al Fatihah" />
-        <BaseBadge id="2" title="Al Baqarah" />
-        <BaseBadge id="3" title="Yasin" />
+      <div class="space-y-2 mt-4">
+        <p class="text-sm font-semibold text-primary it">Rekomendasi Surah populer</p>
+        <div class="flex gap-2">
+          <BaseBadge
+            v-for="surah in suggestionSurahs"
+            :key="surah.id"
+            :id="surah.id"
+            :title="surah.title"
+            @click="handleSuggestion(surah.title)"
+          />
+        </div>
       </div>
-      <RouterLink :to="{ name: 'surah' }">
-        <p class="text-sm font-medium text-primary text-right mt-2">Lihat semua surah →</p>
-      </RouterLink>
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-8">
       <p>Tempat card surah</p>
+      <RouterLink :to="{ name: 'surah' }">
+        <p class="text-sm font-medium text-primary text-right mt-2">Lihat semua surah →</p>
+      </RouterLink>
     </div>
     <div class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4">
       <div class="flex items-center gap-4">
