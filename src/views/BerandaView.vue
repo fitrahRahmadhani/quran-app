@@ -1,4 +1,5 @@
 <script setup>
+import SurahCard from '@/components/surahs/SurahCard.vue'
 import BaseBadge from '@/components/ui/BaseBadge.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { Bookmark, Search } from '@lucide/vue'
@@ -14,6 +15,41 @@ const suggestionSurahs = [
   { id: 2, title: 'Al-Kahfi' },
   { id: 3, title: 'Yasin' },
   { id: 4, title: "Al-Waqi'ah" },
+]
+
+const defaultSurahs = [
+  {
+    nomor: 1,
+    nama: 'الفاتحة',
+    namaLatin: 'Al-Fatihah',
+    jumlahAyat: 7,
+    tempatTurun: 'Mekah',
+    arti: 'Pembukaan',
+  },
+  {
+    nomor: 2,
+    nama: 'البقرة',
+    namaLatin: 'Al-Baqarah',
+    jumlahAyat: 286,
+    tempatTurun: 'Madinah',
+    arti: 'Sapi',
+  },
+  {
+    nomor: 3,
+    nama: 'اٰل عمران',
+    namaLatin: "Ali 'Imran",
+    jumlahAyat: 200,
+    tempatTurun: 'Madinah',
+    arti: 'Keluarga Imran',
+  },
+  {
+    nomor: 4,
+    nama: 'النساۤء',
+    namaLatin: "An-Nisa'",
+    jumlahAyat: 176,
+    tempatTurun: 'Madinah',
+    arti: 'Wanita',
+  },
 ]
 
 function handleSearch() {
@@ -78,7 +114,7 @@ function handleSuggestion(value) {
       </p>
       <div class="space-y-2 mt-4">
         <p class="text-sm font-semibold text-primary it">Rekomendasi Surah populer</p>
-        <div class="flex gap-2">
+        <div class="flex gap-2 flex-wrap">
           <BaseBadge
             v-for="surah in suggestionSurahs"
             :key="surah.id"
@@ -90,11 +126,24 @@ function handleSuggestion(value) {
       </div>
     </div>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-8">
-      <p>Tempat card surah</p>
-      <RouterLink :to="{ name: 'surah' }">
-        <p class="text-sm font-medium text-primary text-right mt-2">Lihat semua surah →</p>
-      </RouterLink>
+    <div class="w-full flex flex-col mt-8">
+      <div class="w-fit self-end">
+        <RouterLink :to="{ name: 'surah' }">
+          <p class="text-sm font-medium text-primary text-right mb-4">Lihat semua surah →</p>
+        </RouterLink>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
+        <SurahCard
+          v-for="surah in defaultSurahs"
+          :key="surah.nomor"
+          :id="surah.nomor"
+          :number="surah.nomor"
+          :title="surah.namaLatin"
+          :arabic-title="surah.nama"
+          :number-of-verses="surah.jumlahAyat"
+          :meaning="surah.arti"
+        />
+      </div>
     </div>
     <div class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4">
       <div class="flex items-center gap-4">
