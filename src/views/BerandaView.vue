@@ -6,11 +6,16 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const inputSearch = ref()
+const inputSearch = ref('')
+const errorMessage = ref('')
 
 function handleSearch() {
   const query = inputSearch.value.trim()
-  if (!query) return
+  if (!query) {
+    errorMessage.value = 'Silahkan masukkan nama surah terlebih dahulu'
+    return
+  }
+  errorMessage.value = ''
   router.push({ name: 'surah', query: { q: query } })
 }
 </script>
@@ -30,7 +35,12 @@ function handleSearch() {
       class="md:w-2/3 lg:w-1/2 mx-auto mt-8 bg-white shadow-lg border border-gray-200 rounded-3xl p-4"
     >
       <form
-        class="flex items-center justify-between bg-white shadow-lg border border-gray-200 p-4 rounded-3xl gap-4 transition-all duration-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20"
+        :class="
+          errorMessage
+            ? 'border-red-500'
+            : 'border-gray-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20'
+        "
+        class="flex items-center justify-between bg-white shadow-lg border p-4 rounded-3xl gap-4 transition-all duration-200"
         @submit.prevent="handleSearch"
       >
         <div class="flex items-center gap-2 w-full">
@@ -41,6 +51,7 @@ function handleSearch() {
             type="text"
             class="w-full text-lg outline-none"
             placeholder="Cari surah..."
+            @input="errorMessage = ''"
           />
         </div>
         <button
@@ -51,6 +62,9 @@ function handleSearch() {
           Cari
         </button>
       </form>
+      <p v-if="errorMessage" class="text-sm text-red-500 mt-2 ml-2" role="alert">
+        {{ errorMessage }}
+      </p>
       <div class="mt-4 flex gap-2">
         <BaseBadge id="1" title="Al Fatihah" />
         <BaseBadge id="2" title="Al Baqarah" />
