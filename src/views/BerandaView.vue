@@ -1,8 +1,18 @@
-<script setup lang="ts">
-import SurahCard from '@/components/surahs/SurahCard.vue'
+<script setup>
 import BaseBadge from '@/components/ui/BaseBadge.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { Bookmark, Search } from '@lucide/vue'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const inputSearch = ref()
+
+function handleSearch() {
+  const query = inputSearch.value.trim()
+  if (!query) return
+  router.push({ name: 'surah', query: { q: query } })
+}
 </script>
 
 <template>
@@ -19,26 +29,28 @@ import { Bookmark, Search } from '@lucide/vue'
     <div
       class="md:w-2/3 lg:w-1/2 mx-auto mt-8 bg-white shadow-lg border border-gray-200 rounded-3xl p-4"
     >
-      <label
-        for="search-bar"
+      <form
         class="flex items-center justify-between bg-white shadow-lg border border-gray-200 p-4 rounded-3xl gap-4 transition-all duration-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20"
+        @submit.prevent="handleSearch"
       >
         <div class="flex items-center gap-2 w-full">
           <Search :size="22" class="text-primary" />
           <input
             id="search-bar"
+            v-model="inputSearch"
             type="text"
             class="w-full text-lg outline-none"
             placeholder="Cari surah..."
           />
         </div>
         <button
-          type="button"
+          type="submit"
           class="bg-primary text-white px-6 py-2 shadow-xl shadow-primary/20 rounded-3xl"
+          aria-label="Tombol pencarian surah"
         >
           Cari
         </button>
-      </label>
+      </form>
       <div class="mt-4 flex gap-2">
         <BaseBadge id="1" title="Al Fatihah" />
         <BaseBadge id="2" title="Al Baqarah" />
@@ -50,38 +62,7 @@ import { Bookmark, Search } from '@lucide/vue'
     </div>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-8">
-      <SurahCard
-        id="1"
-        number="01"
-        title="Al Fatihah"
-        arabic-title="الفاتحة"
-        number-of-verses="7"
-        meaning="Pembuka"
-      />
-      <SurahCard
-        id="1"
-        number="01"
-        title="Al Fatihah"
-        arabic-title="الفاتحة"
-        number-of-verses="7"
-        meaning="Pembuka"
-      />
-      <SurahCard
-        id="1"
-        number="01"
-        title="Al Fatihah"
-        arabic-title="الفاتحة"
-        number-of-verses="7"
-        meaning="Pembuka"
-      />
-      <SurahCard
-        id="1"
-        number="01"
-        title="Al Fatihah"
-        arabic-title="الفاتحة"
-        number-of-verses="7"
-        meaning="Pembuka"
-      />
+      <p>Tempat card surah</p>
     </div>
     <div class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4">
       <div class="flex items-center gap-4">
