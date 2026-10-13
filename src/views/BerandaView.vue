@@ -12,7 +12,7 @@ const errorMessage = ref('')
 
 const suggestionSurahs = [
   { id: 1, title: 'Al-Fatihah' },
-  { id: 2, title: 'Al-Kahfi' },
+  { id: 2, title: 'Al-Kahf' },
   { id: 3, title: 'Yasin' },
   { id: 4, title: "Al-Waqi'ah" },
 ]
