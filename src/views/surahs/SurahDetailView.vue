@@ -31,6 +31,7 @@ const progress = computed(() => {
 })
 const indonesianTranslate = ref(true)
 const transliteration = ref(true)
+const toArabicNumber = (n) => n.toLocaleString('ar-EG')
 
 function togglePlayer(key, url) {
   const equal = activeAudio.value === key
@@ -130,7 +131,9 @@ watch(qari, (newQari) => {
       <div class="w-40 h-40 rounded-full absolute -top-10 -right-10 bg-white/10"></div>
     </div>
     <div class="flex gap-8 mt-8">
-      <div class="bg-white rounded-2xl p-4 w-62.5 space-y-4 divide-y divide-gray-200">
+      <div
+        class="bg-white sticky top-26 rounded-2xl p-4 w-62.5 h-fit space-y-4 divide-y divide-gray-200"
+      >
         <div class="pb-4 border-b border-gray-200">
           <p class="font-semibold text-primary">Pengaturan Baca</p>
           <p class="text-xs text-gray-500">Sesuaikan kenyamananmu</p>
@@ -185,12 +188,21 @@ watch(qari, (newQari) => {
       <div class="w-full">
         <div class="w-full my-8">
           <img
-            class="w-1/2 max-w-[350px] mx-auto"
+            class="w-1/2 max-w-87.5 mx-auto"
             src="@/assets/decorative/bismillah.svg"
             alt="Bismillahirrahmanirrahim"
           />
         </div>
-        Ayat
+        <div class="mt-20 divide-y divide-primary/20">
+          <div class="py-8" v-for="(ayat, index) in surah.ayat" :key="index" :id="index">
+            <p dir="rtl" lang="ar" class="text-5xl leading-quran font-quran text-gray-800">
+              {{ ayat.teksArab }}
+              <span class="text-primary"> &#x06DD;{{ toArabicNumber(ayat.nomorAyat) }}</span>
+            </p>
+            <p class="mt-8 text-primary">{{ ayat.teksLatin }}</p>
+            <p class="mt-2">{{ ayat.teksIndonesia }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </DefaultLayout>
