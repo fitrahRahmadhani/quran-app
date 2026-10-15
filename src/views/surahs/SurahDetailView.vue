@@ -66,6 +66,15 @@ audio.onloadedmetadata = () => {
 }
 
 audio.onended = () => {
+  const current = activeAudio.value
+  const next = Number.isInteger(current) ? current + 1 : null
+  const nextAyat = next !== null ? surah.value.ayat[next] : null
+
+  if (nextAyat) {
+    togglePlayer(next, nextAyat.audio[qari.value])
+    return
+  }
+
   isPlaying.value = false
   activeAudio.value = null
   currentTime.value = 0
@@ -97,6 +106,15 @@ watch(qari, (newQari) => {
 
   currentTime.value = 0
   if (wasPlaying) audio.play()
+})
+
+watch(activeAudio, (key) => {
+  if (!Number.isInteger(key)) return
+
+  document.getElementById(`ayat-${key}`)?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center',
+  })
 })
 </script>
 
@@ -235,7 +253,13 @@ watch(qari, (newQari) => {
             />
           </div>
           <div class="mt-20 divide-y divide-primary/20">
-            <div class="py-8" v-for="(ayat, index) in surah.ayat" :key="index" :id="index">
+            <div
+              class="py-8 px-4 scroll-mt-28 transition-colors"
+              :class="isActive(index) ? 'bg-primary/10' : ''"
+              v-for="(ayat, index) in surah.ayat"
+              :key="index"
+              :id="`ayat-${index}`"
+            >
               <p dir="rtl" lang="ar" class="text-5xl leading-quran font-quran text-gray-800">
                 {{ ayat.teksArab }}
                 <span class="text-primary"> &#x06DD;{{ toArabicNumber(ayat.nomorAyat) }}</span>
