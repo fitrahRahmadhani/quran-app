@@ -23,6 +23,12 @@ const qariOptions = [
   { value: '05', label: 'Misyari Rasyid Al-Afasy' },
   { value: '06', label: 'Yasser-Al-Dosari' },
 ]
+const arabicTextSizeList = [
+  { name: 'Kecil', class: 'text-4xl' },
+  { name: 'Sedang', class: 'text-5xl' },
+  { name: 'Besar', class: 'text-6xl' },
+]
+const arabicTextSize = ref(1)
 const currentTime = ref(0)
 const duration = ref(0)
 const progress = computed(() => {
@@ -35,6 +41,12 @@ const toArabicNumber = (n) => n.toLocaleString('ar-EG')
 
 const isActive = (key) => activeAudio.value === key
 const isKeyPlaying = (key) => activeAudio.value === key && isPlaying.value
+
+function changeArabicTextSize(step) {
+  const next = arabicTextSize.value + step
+  if (next < 0 || next >= arabicTextSizeList.length) return
+  arabicTextSize.value = next
+}
 
 function togglePlayer(key, url) {
   const equal = activeAudio.value === key
@@ -221,9 +233,21 @@ watch(activeAudio, (key) => {
               <div
                 class="flex items-center justify-between p-2 bg-primary/10 rounded-lg text-primary"
               >
-                <button class="flex items-center text-sm">A<Minus :size="14" /></button>
-                <p class="text-sm font-semibold">Sedang</p>
-                <button class="flex items-center font-semibold">
+                <button
+                  @click="changeArabicTextSize(-1)"
+                  :disabled="arabicTextSize === 0"
+                  class="flex items-center text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  A<Minus :size="14" />
+                </button>
+                <p class="text-sm font-semibold">
+                  {{ arabicTextSizeList[arabicTextSize].name }}
+                </p>
+                <button
+                  @click="changeArabicTextSize(1)"
+                  :disabled="arabicTextSize === arabicTextSizeList.length - 1"
+                  class="flex items-center font-semibold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                >
                   A<Plus :size="14" :stroke-width="3" />
                 </button>
               </div>
@@ -278,7 +302,12 @@ watch(activeAudio, (key) => {
               :key="index"
               :id="`ayat-${index}`"
             >
-              <p dir="rtl" lang="ar" class="text-5xl leading-quran font-quran text-gray-800">
+              <p
+                dir="rtl"
+                lang="ar"
+                class="leading-quran font-quran text-gray-800"
+                :class="arabicTextSizeList[arabicTextSize].class"
+              >
                 {{ ayat.teksArab }}
                 <span class="text-primary"> &#x06DD;{{ toArabicNumber(ayat.nomorAyat) }}</span>
               </p>
