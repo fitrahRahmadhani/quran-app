@@ -5,7 +5,7 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { Bookmark, Minus, Pause, Play, Plus, TriangleAlert } from '@lucide/vue'
 import axios from 'axios'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 const route = useRoute()
 const surah = ref('')
@@ -33,7 +33,6 @@ const indonesianTranslate = ref(true)
 const transliteration = ref(true)
 const toArabicNumber = (n) => n.toLocaleString('ar-EG')
 
-// helper untuk template
 const isActive = (key) => activeAudio.value === key
 const isKeyPlaying = (key) => activeAudio.value === key && isPlaying.value
 
@@ -81,16 +80,35 @@ audio.onended = () => {
   duration.value = 0
 }
 
-onMounted(async () => {
+async function fetchSurah(id) {
+  isLoading.value = true
+  errorMessage.value = ''
   try {
-    const res = await axios.get(`https://equran.id/api/v2/surat/${route.params.id}`)
+    const res = await axios.get(`https://equran.id/api/v2/surat/${id}`)
     surah.value = res.data.data
   } catch (e) {
     errorMessage.value = e.message
   } finally {
     isLoading.value = false
   }
-})
+}
+
+watch(
+  () => route.params.id,
+  (id) => {
+    if (!id) return
+    audio.pause()
+    audio.src = ''
+    activeAudio.value = null
+    isPlaying.value = false
+    currentTime.value = 0
+    duration.value = 0
+
+    fetchSurah(id)
+    window.scrollTo({ top: 0 })
+  },
+  { immediate: true },
+)
 
 onUnmounted(() => {
   audio.pause()
@@ -264,8 +282,8 @@ watch(activeAudio, (key) => {
                 {{ ayat.teksArab }}
                 <span class="text-primary"> &#x06DD;{{ toArabicNumber(ayat.nomorAyat) }}</span>
               </p>
-              <p class="mt-8 text-primary">{{ ayat.teksLatin }}</p>
-              <p class="mt-2">{{ ayat.teksIndonesia }}</p>
+              <p v-if="transliteration" class="mt-8 text-primary">{{ ayat.teksLatin }}</p>
+              <p v-if="indonesianTranslate" class="mt-2">{{ ayat.teksIndonesia }}</p>
               <div class="mt-2 flex items-center">
                 <button class="shrink-0 pr-1 py-1 font-semibold text-primary/50">
                   <Bookmark :size="18" :stroke-width="2.5" />
@@ -295,6 +313,49 @@ watch(activeAudio, (key) => {
             <p class="font-quran text-5xl text-primary">آمِيْن</p>
             <p class="mt-8 text-primary">Aamiin</p>
             <p class="mt-2">Ya Allah, kabulkanlah</p>
+          </div>
+          <div class="w-full grid grid-cols-2 gap-8 mt-8">
+            <RouterLink
+              v-if="surah.suratSebelumnya"
+              :to="{ name: 'surah-read', params: { id: surah.suratSebelumnya.nomor } }"
+              class="col-start-1 flex items-center justify-between gap-4 p-4 bg-white rounded-2xl"
+            >
+              <div class="flex items-center gap-4">
+                <div class="shrink-0 rounded-lg bg-primary/10 text-primary p-2">
+                  <p dir="rtl" lang="ar" class="font-quran text-3xl leading-none">
+                    &#x06DD;{{ toArabicNumber(surah.suratSebelumnya.nomor) }}
+                  </p>
+                </div>
+                <div class="text-primary">
+                  <p class="font-medium">{{ surah.suratSebelumnya.namaLatin }}</p>
+                  <p class="text-xs font-light">{{ surah.suratSebelumnya.jumlahAyat }} ayat</p>
+                </div>
+              </div>
+              <p dir="rtl" lang="ar" class="font-quran text-3xl text-primary self-baseline">
+                {{ surah.suratSebelumnya.nama }}
+              </p>
+            </RouterLink>
+
+            <RouterLink
+              v-if="surah.suratSelanjutnya"
+              :to="{ name: 'surah-read', params: { id: surah.suratSelanjutnya.nomor } }"
+              class="col-start-2 flex items-center justify-between gap-4 p-4 bg-primary rounded-2xl"
+            >
+              <div class="flex items-center gap-4">
+                <div class="shrink-0 rounded-lg bg-white/10 text-accent p-2">
+                  <p dir="rtl" lang="ar" class="font-quran text-3xl leading-none">
+                    &#x06DD;{{ toArabicNumber(surah.suratSelanjutnya.nomor) }}
+                  </p>
+                </div>
+                <div class="text-white">
+                  <p class="font-medium">{{ surah.suratSelanjutnya.namaLatin }}</p>
+                  <p class="text-xs font-light">{{ surah.suratSelanjutnya.jumlahAyat }} ayat</p>
+                </div>
+              </div>
+              <p dir="rtl" lang="ar" class="font-quran text-3xl text-accent self-baseline">
+                {{ surah.suratSelanjutnya.nama }}
+              </p>
+            </RouterLink>
           </div>
         </div>
       </div>
