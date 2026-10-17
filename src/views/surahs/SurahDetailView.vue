@@ -2,9 +2,9 @@
 import SelectDropdown from '@/components/ui/SelectDropdown.vue'
 import ToggleSwitch from '@/components/ui/ToggleSwitch.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import { Bookmark, Minus, Pause, Play, Plus, TriangleAlert } from '@lucide/vue'
+import { Bookmark, Minus, Pause, Play, Plus, Settings2, TriangleAlert } from '@lucide/vue'
 import axios from 'axios'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -23,10 +23,13 @@ const qariOptions = [
   { value: '05', label: 'Misyari Rasyid Al-Afasy' },
   { value: '06', label: 'Yasser-Al-Dosari' },
 ]
+
+const showSettings = ref(false)
+
 const arabicTextSizeList = [
-  { name: 'Kecil', class: 'text-4xl' },
-  { name: 'Sedang', class: 'text-5xl' },
-  { name: 'Besar', class: 'text-6xl' },
+  { name: 'Kecil', class: 'text-2xl sm:text-3xl lg:text-4xl' },
+  { name: 'Sedang', class: 'text-3xl sm:text-4xl lg:text-5xl' },
+  { name: 'Besar', class: 'text-4xl sm:text-5xl lg:text-6xl' },
 ]
 const translateTextSizeList = [
   { name: 'Kecil', class: 'text-sm' },
@@ -35,6 +38,7 @@ const translateTextSizeList = [
 ]
 const arabicTextSize = ref(1)
 const translateTextSize = ref(1)
+
 const currentTime = ref(0)
 const duration = ref(0)
 const progress = computed(() => {
@@ -162,7 +166,7 @@ watch(activeAudio, (key) => {
 
 <template>
   <DefaultLayout>
-    <div class="flex gap-2 mb-6">
+    <div class="hidden flex-wrap gap-x-2 gap-y-1 mb-6 md:flex">
       <RouterLink :to="{ name: 'beranda' }"
         ><p class="text-sm text-gray-500">Beranda</p>
       </RouterLink>
@@ -178,7 +182,7 @@ watch(activeAudio, (key) => {
     </div>
     <div
       v-else-if="errorMessage"
-      class="flex flex-col items-center text-center gap-4 mt-12 p-8 bg-white border border-red-100 rounded-3xl"
+      class="flex flex-col items-center text-center gap-4 mt-12 p-6 sm:p-8 bg-white border border-red-100 rounded-3xl"
     >
       <div class="p-4 rounded-full bg-red-50 text-red-500">
         <TriangleAlert :size="40" />
@@ -194,23 +198,27 @@ watch(activeAudio, (key) => {
 
     <div v-else class="w-full">
       <div
-        class="w-full h-fit relative flex flex-col bg-primary rounded-3xl overflow-hidden p-8 gap-8"
+        class="w-full h-fit relative flex flex-col bg-primary rounded-3xl overflow-hidden p-5 sm:p-8 gap-6 sm:gap-8"
       >
-        <div class="flex justify-between items-center">
-          <div>
-            <p class="text-secondary text-3xl font-semibold">{{ surah.namaLatin }}</p>
-            <p class="text-accent/50">
+        <div class="flex justify-between items-center gap-4">
+          <div class="min-w-0">
+            <p class="text-secondary text-2xl sm:text-3xl font-semibold">{{ surah.namaLatin }}</p>
+            <p class="text-accent/50 text-sm sm:text-base">
               {{ surah.arti }} • {{ surah.tempatTurun }} • {{ surah.jumlahAyat }} Ayat
             </p>
           </div>
-          <p dir="rtl" lang="ar" class="text-secondary text-6xl font-quran self-start">
+          <p
+            dir="rtl"
+            lang="ar"
+            class="text-secondary text-4xl sm:text-5xl lg:text-6xl font-quran self-start shrink-0"
+          >
             {{ surah.nama }}
           </p>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3 sm:gap-2">
           <button
             type="button"
-            class="bg-secondary shrink-0 py-2 px-4 font-semibold rounded-full text-primary"
+            class="bg-secondary shrink-0 py-2 px-4 font-semibold rounded-full text-primary text-sm sm:text-base"
             @click="togglePlayer('full', surah.audioFull[qari])"
           >
             <div v-if="!isKeyPlaying('full')" class="flex gap-2 items-center">
@@ -231,96 +239,120 @@ watch(activeAudio, (key) => {
         </div>
         <div class="w-40 h-40 rounded-full absolute -top-10 -right-10 bg-white/10"></div>
       </div>
-      <div class="flex gap-8 mt-8">
+
+      <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-6 lg:mt-8">
         <div
-          class="bg-white sticky top-26 rounded-2xl p-4 w-62.5 h-fit space-y-4 divide-y divide-gray-200"
+          class="fixed right-4 bottom-24 z-40 md:bottom-6 lg:static lg:z-auto lg:w-62.5 lg:shrink-0"
         >
-          <div class="pb-4 border-b border-gray-200">
-            <p class="font-semibold text-primary">Pengaturan Baca</p>
-            <p class="text-xs text-gray-500">Sesuaikan kenyamananmu</p>
-          </div>
-          <div class="space-y-4 pb-4">
-            <div class="space-y-2">
-              <p class="text-sm font-semibold text-primary">Ukuran teks arab</p>
-              <div
-                class="flex items-center justify-between p-2 bg-primary/10 rounded-lg text-primary"
-              >
-                <button
-                  @click="changeArabicTextSize(-1)"
-                  :disabled="arabicTextSize === 0"
-                  class="flex items-center text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+          <div class="lg:sticky lg:top-26">
+            <div
+              v-if="showSettings"
+              class="fixed inset-0 bg-black/20 lg:hidden"
+              @click="showSettings = false"
+            ></div>
+
+            <button
+              type="button"
+              aria-label="Pengaturan baca"
+              class="relative size-12 flex items-center justify-center rounded-full bg-primary/50 text-white shadow-lg cursor-pointer lg:hidden"
+              @click="showSettings = !showSettings"
+            >
+              <Settings2 :size="22" />
+            </button>
+
+            <div
+              :class="showSettings ? 'flex' : 'hidden lg:flex'"
+              class="absolute bottom-14 right-0 w-72 max-w-[calc(100vw-2rem)] flex-col gap-4 rounded-2xl bg-white p-4 shadow-xl lg:static lg:w-full lg:max-w-none lg:shadow-none"
+            >
+              <div class="pb-4 border-b border-gray-200">
+                <p class="font-semibold text-primary">Pengaturan Baca</p>
+                <p class="text-xs text-gray-500">Sesuaikan kenyamananmu</p>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-sm font-semibold text-primary">Ukuran teks arab</p>
+                <div
+                  class="flex items-center justify-between p-2 bg-primary/10 rounded-lg text-primary"
                 >
-                  A<Minus :size="14" />
-                </button>
-                <p class="text-sm font-semibold">
-                  {{ arabicTextSizeList[arabicTextSize].name }}
-                </p>
-                <button
-                  @click="changeArabicTextSize(1)"
-                  :disabled="arabicTextSize === arabicTextSizeList.length - 1"
-                  class="flex items-center font-semibold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  <button
+                    @click="changeArabicTextSize(-1)"
+                    :disabled="arabicTextSize === 0"
+                    class="flex items-center text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    A<Minus :size="14" />
+                  </button>
+                  <p class="text-sm font-semibold">{{ arabicTextSizeList[arabicTextSize].name }}</p>
+                  <button
+                    @click="changeArabicTextSize(1)"
+                    :disabled="arabicTextSize === arabicTextSizeList.length - 1"
+                    class="flex items-center font-semibold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    A<Plus :size="14" :stroke-width="3" />
+                  </button>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-sm font-semibold text-primary">Ukuran terjemahan</p>
+                <div
+                  class="flex items-center justify-between p-2 bg-primary/10 rounded-lg text-primary"
                 >
-                  A<Plus :size="14" :stroke-width="3" />
-                </button>
+                  <button
+                    @click="changeTranslateTextSize(-1)"
+                    :disabled="translateTextSize === 0"
+                    class="flex items-center text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    A<Minus :size="14" />
+                  </button>
+                  <p class="text-sm font-semibold">
+                    {{ translateTextSizeList[translateTextSize].name }}
+                  </p>
+                  <button
+                    @click="changeTranslateTextSize(1)"
+                    :disabled="translateTextSize === translateTextSizeList.length - 1"
+                    class="flex items-center font-semibold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    A<Plus :size="14" :stroke-width="3" />
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-primary">Terjemahan</p>
+                  <p class="text-xs text-gray-500">Bahasa Indonesia</p>
+                </div>
+                <ToggleSwitch v-model="indonesianTranslate" />
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm font-semibold text-primary">Transliterasi</p>
+                  <p class="text-xs text-gray-500">Tampilkan teks Latin</p>
+                </div>
+                <ToggleSwitch v-model="transliteration" />
+              </div>
+
+              <div class="space-y-2">
+                <p class="text-sm font-semibold text-primary">Qori</p>
+                <SelectDropdown v-model="qari" :options="qariOptions" />
               </div>
             </div>
-            <div class="space-y-2">
-              <p class="text-sm font-semibold text-primary">Ukuran terjemahan</p>
-              <div
-                class="flex items-center justify-between p-2 bg-primary/10 rounded-lg text-primary"
-              >
-                <button
-                  @click="changeTranslateTextSize(-1)"
-                  :disabled="translatTextSize === 0"
-                  class="flex items-center text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  A<Minus :size="14" />
-                </button>
-                <p class="text-sm font-semibold">
-                  {{ translateTextSizeList[translateTextSize].name }}
-                </p>
-                <button
-                  @click="changeTranslateTextSize(1)"
-                  :disabled="translateTextSize === translateTextSizeList.length - 1"
-                  class="flex items-center font-semibold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  A<Plus :size="14" :stroke-width="3" />
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="space-y-4 pb-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-semibold text-primary">Terjemahan</p>
-                <p class="text-xs text-gray-500">Bahasa Indonesia</p>
-              </div>
-              <ToggleSwitch v-model="indonesianTranslate" />
-            </div>
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-semibold text-primary">Transliterasi</p>
-                <p class="text-xs text-gray-500">Tampilkan teks Latin</p>
-              </div>
-              <ToggleSwitch v-model="transliteration" />
-            </div>
-          </div>
-          <div class="space-y-2">
-            <p class="text-sm font-semibold text-primary">Qori</p>
-            <SelectDropdown v-model="qari" :options="qariOptions" />
           </div>
         </div>
-        <div class="w-full">
-          <div class="w-full my-8">
+
+        <div class="w-full min-w-0">
+          <div class="w-full my-4 sm:my-8">
             <img
-              class="w-1/2 max-w-100 mx-auto"
+              class="w-3/4 sm:w-1/2 max-w-100 mx-auto"
               src="@/assets/decorative/bismillah.svg"
               alt="Bismillahirrahmanirrahim"
             />
           </div>
-          <div class="mt-20 divide-y divide-primary/20">
+
+          <div class="mt-8 sm:mt-20 divide-y divide-primary/20">
             <div
-              class="py-8 px-4 scroll-mt-28 transition-colors"
+              class="py-6 sm:py-8 px-3 sm:px-4 scroll-mt-28 transition-colors"
               :class="isActive(index) ? 'bg-primary/10' : ''"
               v-for="(ayat, index) in surah.ayat"
               :key="index"
@@ -335,7 +367,9 @@ watch(activeAudio, (key) => {
                 {{ ayat.teksArab }}
                 <span class="text-primary"> &#x06DD;{{ toArabicNumber(ayat.nomorAyat) }}</span>
               </p>
-              <p v-if="transliteration" class="mt-8 text-primary">{{ ayat.teksLatin }}</p>
+              <p v-if="transliteration" class="mt-6 sm:mt-8 text-primary text-sm sm:text-base">
+                {{ ayat.teksLatin }}
+              </p>
               <p
                 v-if="indonesianTranslate"
                 class="mt-2"
@@ -361,36 +395,42 @@ watch(activeAudio, (key) => {
                 </button>
                 <div
                   v-if="isActive(index)"
-                  class="w-50 h-1 rounded-full bg-primary/20 overflow-hidden"
+                  class="flex-1 max-w-50 h-1 ml-1 rounded-full bg-primary/20 overflow-hidden"
                 >
                   <div class="h-full bg-primary" :style="{ width: progress + '%' }"></div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="w-full bg-primary/20 p-8 rounded-2xl text-center mt-8">
-            <p class="font-quran text-5xl text-primary">آمِيْن</p>
-            <p class="mt-8 text-primary">Aamiin</p>
+
+          <div class="w-full bg-primary/20 p-6 sm:p-8 rounded-2xl text-center mt-8">
+            <p class="font-quran text-4xl sm:text-5xl text-primary">آمِيْن</p>
+            <p class="mt-6 sm:mt-8 text-primary">Aamiin</p>
             <p class="mt-2">Ya Allah, kabulkanlah</p>
           </div>
-          <div class="w-full grid grid-cols-2 gap-8 mt-8">
+
+          <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 mt-8">
             <RouterLink
               v-if="surah.suratSebelumnya"
               :to="{ name: 'surah-read', params: { id: surah.suratSebelumnya.nomor } }"
-              class="col-start-1 flex items-center justify-between gap-4 p-4 bg-white rounded-2xl"
+              class="sm:col-start-1 flex items-center justify-between gap-4 p-4 bg-white rounded-2xl"
             >
-              <div class="flex items-center gap-4">
+              <div class="flex items-center gap-3 sm:gap-4 min-w-0">
                 <div class="shrink-0 rounded-lg bg-primary/10 text-primary p-2">
-                  <p dir="rtl" lang="ar" class="font-quran text-3xl leading-none">
+                  <p dir="rtl" lang="ar" class="font-quran text-2xl sm:text-3xl leading-none">
                     &#x06DD;{{ toArabicNumber(surah.suratSebelumnya.nomor) }}
                   </p>
                 </div>
-                <div class="text-primary">
-                  <p class="font-medium">{{ surah.suratSebelumnya.namaLatin }}</p>
+                <div class="text-primary min-w-0">
+                  <p class="font-medium truncate">{{ surah.suratSebelumnya.namaLatin }}</p>
                   <p class="text-xs font-light">{{ surah.suratSebelumnya.jumlahAyat }} ayat</p>
                 </div>
               </div>
-              <p dir="rtl" lang="ar" class="font-quran text-3xl text-primary self-baseline">
+              <p
+                dir="rtl"
+                lang="ar"
+                class="font-quran text-2xl sm:text-3xl text-primary self-baseline shrink-0"
+              >
                 {{ surah.suratSebelumnya.nama }}
               </p>
             </RouterLink>
@@ -398,20 +438,24 @@ watch(activeAudio, (key) => {
             <RouterLink
               v-if="surah.suratSelanjutnya"
               :to="{ name: 'surah-read', params: { id: surah.suratSelanjutnya.nomor } }"
-              class="col-start-2 flex items-center justify-between gap-4 p-4 bg-primary rounded-2xl"
+              class="sm:col-start-2 flex items-center justify-between gap-4 p-4 bg-primary rounded-2xl"
             >
-              <div class="flex items-center gap-4">
+              <div class="flex items-center gap-3 sm:gap-4 min-w-0">
                 <div class="shrink-0 rounded-lg bg-white/10 text-accent p-2">
-                  <p dir="rtl" lang="ar" class="font-quran text-3xl leading-none">
+                  <p dir="rtl" lang="ar" class="font-quran text-2xl sm:text-3xl leading-none">
                     &#x06DD;{{ toArabicNumber(surah.suratSelanjutnya.nomor) }}
                   </p>
                 </div>
-                <div class="text-white">
-                  <p class="font-medium">{{ surah.suratSelanjutnya.namaLatin }}</p>
+                <div class="text-white min-w-0">
+                  <p class="font-medium truncate">{{ surah.suratSelanjutnya.namaLatin }}</p>
                   <p class="text-xs font-light">{{ surah.suratSelanjutnya.jumlahAyat }} ayat</p>
                 </div>
               </div>
-              <p dir="rtl" lang="ar" class="font-quran text-3xl text-accent self-baseline">
+              <p
+                dir="rtl"
+                lang="ar"
+                class="font-quran text-2xl sm:text-3xl text-accent self-baseline shrink-0"
+              >
                 {{ surah.suratSelanjutnya.nama }}
               </p>
             </RouterLink>
