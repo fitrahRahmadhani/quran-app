@@ -28,7 +28,13 @@ const arabicTextSizeList = [
   { name: 'Sedang', class: 'text-5xl' },
   { name: 'Besar', class: 'text-6xl' },
 ]
+const translateTextSizeList = [
+  { name: 'Kecil', class: 'text-sm' },
+  { name: 'Sedang', class: 'text-base' },
+  { name: 'Besar', class: 'text-lg' },
+]
 const arabicTextSize = ref(1)
+const translateTextSize = ref(1)
 const currentTime = ref(0)
 const duration = ref(0)
 const progress = computed(() => {
@@ -46,6 +52,12 @@ function changeArabicTextSize(step) {
   const next = arabicTextSize.value + step
   if (next < 0 || next >= arabicTextSizeList.length) return
   arabicTextSize.value = next
+}
+
+function changeTranslateTextSize(step) {
+  const next = translateTextSize.value + step
+  if (next < 0 || next >= translateTextSizeList.length) return
+  translateTextSize.value = next
 }
 
 function togglePlayer(key, url) {
@@ -257,9 +269,21 @@ watch(activeAudio, (key) => {
               <div
                 class="flex items-center justify-between p-2 bg-primary/10 rounded-lg text-primary"
               >
-                <button class="flex items-center text-sm">A<Minus :size="14" /></button>
-                <p class="text-sm font-semibold">Sedang</p>
-                <button class="flex items-center font-semibold">
+                <button
+                  @click="changeTranslateTextSize(-1)"
+                  :disabled="translatTextSize === 0"
+                  class="flex items-center text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  A<Minus :size="14" />
+                </button>
+                <p class="text-sm font-semibold">
+                  {{ translateTextSizeList[translateTextSize].name }}
+                </p>
+                <button
+                  @click="changeTranslateTextSize(1)"
+                  :disabled="translateTextSize === translateTextSizeList.length - 1"
+                  class="flex items-center font-semibold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                >
                   A<Plus :size="14" :stroke-width="3" />
                 </button>
               </div>
@@ -312,7 +336,13 @@ watch(activeAudio, (key) => {
                 <span class="text-primary"> &#x06DD;{{ toArabicNumber(ayat.nomorAyat) }}</span>
               </p>
               <p v-if="transliteration" class="mt-8 text-primary">{{ ayat.teksLatin }}</p>
-              <p v-if="indonesianTranslate" class="mt-2">{{ ayat.teksIndonesia }}</p>
+              <p
+                v-if="indonesianTranslate"
+                class="mt-2"
+                :class="translateTextSizeList[translateTextSize].class"
+              >
+                {{ ayat.teksIndonesia }}
+              </p>
               <div class="mt-2 flex items-center">
                 <button class="shrink-0 pr-1 py-1 font-semibold text-primary/50">
                   <Bookmark :size="18" :stroke-width="2.5" />
