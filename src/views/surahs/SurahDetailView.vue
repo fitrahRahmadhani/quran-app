@@ -2,11 +2,23 @@
 import SelectDropdown from '@/components/ui/SelectDropdown.vue'
 import ToggleSwitch from '@/components/ui/ToggleSwitch.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import { Bookmark, Minus, Pause, Play, Plus, Settings2, TriangleAlert } from '@lucide/vue'
+import { useMinimize } from '@/stores/minimize'
+import {
+  Bookmark,
+  Expand,
+  Minimize,
+  Minus,
+  Pause,
+  Play,
+  Plus,
+  Settings2,
+  TriangleAlert,
+} from '@lucide/vue'
 import axios from 'axios'
 import { computed, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
+const minimizeStore = useMinimize()
 const route = useRoute()
 const surah = ref('')
 const isLoading = ref(true)
@@ -141,6 +153,7 @@ watch(
 onUnmounted(() => {
   audio.pause()
   audio.src = ''
+  minimizeStore.disableFocusMode()
 })
 
 watch(qari, (newQari) => {
@@ -242,9 +255,24 @@ watch(activeAudio, (key) => {
 
       <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-6 lg:mt-8">
         <div
-          class="fixed right-4 bottom-24 z-40 md:bottom-6 lg:static lg:z-auto lg:w-62.5 lg:shrink-0"
+          class="fixed right-4 z-40 flex flex-col items-end gap-4 md:bottom-6 lg:sticky lg:z-auto lg:shrink-0 lg:items-stretch lg:self-start"
+          :class="
+            minimizeStore.isFocusMode ? 'bottom-4 lg:top-6 lg:w-fit' : 'bottom-24 lg:top-26 lg:w-62.5'
+          "
         >
-          <div class="lg:sticky lg:top-26">
+          <button
+            type="button"
+            :aria-label="minimizeStore.isFocusMode ? 'Keluar mode fokus' : 'Mode fokus baca'"
+            class="w-full flex gap-2 items-center justify-center p-4 bg-white/80 lg:bg-white text-primary rounded-full lg:rounded-2xl cursor-pointer hover:bg-white transition duration-300"
+            @click="minimizeStore.toggleFocusMode()"
+          >
+            <component :is="minimizeStore.isFocusMode ? Minimize : Expand" :size="20" />
+            <p v-if="!minimizeStore.isFocusMode" class="hidden lg:block font-semibold">
+              Mode fokus baca
+            </p>
+          </button>
+
+          <div class="lg:w-full" :class="minimizeStore.isFocusMode ? 'lg:hidden' : ''">
             <div
               v-if="showSettings"
               class="fixed inset-0 bg-black/20 lg:hidden"
@@ -254,7 +282,7 @@ watch(activeAudio, (key) => {
             <button
               type="button"
               aria-label="Pengaturan baca"
-              class="relative size-12 flex items-center justify-center rounded-full bg-primary/50 text-white shadow-lg cursor-pointer lg:hidden"
+              class="relative size-12 flex items-center justify-center rounded-full bg-primary/80 text-white shadow-lg cursor-pointer lg:hidden"
               @click="showSettings = !showSettings"
             >
               <Settings2 :size="22" />
@@ -352,8 +380,11 @@ watch(activeAudio, (key) => {
 
           <div class="mt-8 sm:mt-20 divide-y divide-primary/20">
             <div
-              class="py-6 sm:py-8 px-3 sm:px-4 scroll-mt-28 transition-colors"
-              :class="isActive(index) ? 'bg-primary/10' : ''"
+              class="py-6 sm:py-8 px-3 sm:px-4 transition-colors"
+              :class="[
+                isActive(index) ? 'bg-primary/10' : '',
+                minimizeStore.isFocusMode ? 'scroll-mt-6' : 'scroll-mt-28',
+              ]"
               v-for="(ayat, index) in surah.ayat"
               :key="index"
               :id="`ayat-${index}`"
