@@ -61,8 +61,27 @@ const indonesianTranslate = ref(true)
 const transliteration = ref(true)
 const toArabicNumber = (n) => n.toLocaleString('ar-EG')
 
+const speedOptions = [0.75, 1, 1.25, 1.5, 2]
+const speedIndex = ref(1)
+const speed = computed(() => speedOptions[speedIndex.value])
+
+const nowPlayingLabel = computed(() => {
+  if (activeAudio.value === 'full') return 'Surah penuh'
+  const ayat = surah.value?.ayat?.[activeAudio.value]
+  return ayat ? `Ayat ${ayat.nomorAyat}` : ''
+})
+
 const isActive = (key) => activeAudio.value === key
 const isKeyPlaying = (key) => activeAudio.value === key && isPlaying.value
+
+const formatTime = (s) => {
+  if (!Number.isFinite(s)) return '0:00'
+  const m = Math.floor(s / 60)
+  const r = Math.floor(s % 60)
+    .toString()
+    .padStart(2, '0')
+  return `${m}:${r}`
+}
 
 function changeArabicTextSize(step) {
   const next = arabicTextSize.value + step
@@ -92,8 +111,36 @@ function togglePlayer(key, url) {
     duration.value = 0
   }
 
-  audio.play()
+  audio.play().catch(() => {})
   isPlaying.value = true
+}
+
+function togglePlayback() {
+  if (activeAudio.value === null) return
+  if (isPlaying.value) {
+    audio.pause()
+    isPlaying.value = false
+  } else {
+    audio.play().catch(() => {})
+    isPlaying.value = true
+  }
+}
+
+function skip(seconds) {
+  if (activeAudio.value === null || !duration.value) return
+  audio.currentTime = Math.min(Math.max(audio.currentTime + seconds, 0), duration.value)
+}
+
+function cycleSpeed() {
+  speedIndex.value = (speedIndex.value + 1) % speedOptions.length
+  audio.playbackRate = speed.value
+}
+
+function seek(event) {
+  if (!duration.value) return
+  const rect = event.currentTarget.getBoundingClientRect()
+  const ratio = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1)
+  audio.currentTime = ratio * duration.value
 }
 
 audio.ontimeupdate = () => {
@@ -102,6 +149,7 @@ audio.ontimeupdate = () => {
 
 audio.onloadedmetadata = () => {
   duration.value = audio.duration
+  audio.playbackRate = speed.value
 }
 
 audio.onended = () => {
@@ -164,7 +212,7 @@ watch(qari, (newQari) => {
   audio.src = key === 'full' ? surah.value.audioFull[newQari] : surah.value.ayat[key].audio[newQari]
 
   currentTime.value = 0
-  if (wasPlaying) audio.play()
+  if (wasPlaying) audio.play().catch(() => {})
 })
 
 watch(activeAudio, (key) => {
@@ -179,7 +227,7 @@ watch(activeAudio, (key) => {
 
 <template>
   <DefaultLayout>
-    <div class="hidden flex-wrap gap-x-2 gap-y-1 mb-6 md:flex">
+    <div v-if="!minimizeStore.isFocusMode" class="hidden flex-wrap gap-x-2 gap-y-1 mb-6 md:flex">
       <RouterLink :to="{ name: 'beranda' }"
         ><p class="text-sm text-gray-500">Beranda</p>
       </RouterLink>
@@ -211,6 +259,112 @@ watch(activeAudio, (key) => {
 
     <div v-else class="w-full">
       <div
+        v-if="activeAudio !== null"
+        class="fixed left-4 right-20 bottom-8 z-30 flex flex-col gap-3 bg-white p-4 rounded-2xl shadow-xl"
+        :class="minimizeStore.isFocusMode ? 'lg:left-60 lg:right-39' : 'lg:left-110 lg:right-39'"
+      >
+        <div class="flex items-center gap-3 text-xs text-gray-500">
+          <span class="w-9 text-right tabular-nums">{{ formatTime(currentTime) }}</span>
+          <div class="flex-1 py-2 cursor-pointer" @click="seek">
+            <div class="h-1.5 rounded-full bg-primary/20 overflow-hidden">
+              <div class="h-full bg-primary" :style="{ width: progress + '%' }"></div>
+            </div>
+          </div>
+          <span class="w-9 tabular-nums">{{ formatTime(duration) }}</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="flex-1 min-w-0 flex flex-col">
+            <p class="font-semibold text-primary truncate">{{ surah.namaLatin }}</p>
+            <p class="text-sm text-gray-500 truncate">{{ nowPlayingLabel }}</p>
+          </div>
+
+          <div class="shrink-0 flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Mundur 5 detik"
+              class="p-1 rounded-full text-primary hover:bg-primary/10 cursor-pointer"
+              @click="skip(-5)"
+            >
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <g
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M4.91 7.8C3.8 9.28 3.11 11.11 3.11 13.11 3.11 18.02 7.09 22 12 22s8.89-3.98 8.89-8.89S16.91 4.22 12 4.22c-.68 0-1.34.09-1.98.24"
+                  ></path>
+                  <path d="M10.02 4.47 12 2M10.02 4.47l2.43 1.78"></path>
+                </g>
+                <text
+                  x="12"
+                  y="16.2"
+                  text-anchor="middle"
+                  font-size="7.5"
+                  font-weight="700"
+                  fill="currentColor"
+                >
+                  5
+                </text>
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              :aria-label="isPlaying ? 'Jeda' : 'Putar'"
+              class="p-2 bg-primary text-white rounded-full cursor-pointer"
+              @click="togglePlayback"
+            >
+              <Pause v-if="isPlaying" />
+              <Play v-else />
+            </button>
+
+            <button
+              type="button"
+              aria-label="Maju 5 detik"
+              class="p-1 rounded-full text-primary hover:bg-primary/10 cursor-pointer"
+              @click="skip(5)"
+            >
+              <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <g
+                  transform="matrix(-1 0 0 1 24 0)"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M4.91 7.8C3.8 9.28 3.11 11.11 3.11 13.11 3.11 18.02 7.09 22 12 22s8.89-3.98 8.89-8.89S16.91 4.22 12 4.22c-.68 0-1.34.09-1.98.24"
+                  ></path>
+                  <path d="M10.02 4.47 12 2M10.02 4.47l2.43 1.78"></path>
+                </g>
+                <text
+                  x="12"
+                  y="16.2"
+                  text-anchor="middle"
+                  font-size="7.5"
+                  font-weight="700"
+                  fill="currentColor"
+                >
+                  5
+                </text>
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              aria-label="Ubah kecepatan"
+              class="w-12 py-1 text-sm font-semibold rounded-full bg-primary/10 text-primary cursor-pointer"
+              @click="cycleSpeed"
+            >
+              {{ speed }}x
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
         class="w-full h-fit relative flex flex-col bg-primary rounded-3xl overflow-hidden p-5 sm:p-8 gap-6 sm:gap-8"
       >
         <div class="flex justify-between items-center gap-4">
@@ -228,10 +382,10 @@ watch(activeAudio, (key) => {
             {{ surah.nama }}
           </p>
         </div>
-        <div class="flex items-center gap-3 sm:gap-2">
+        <div class="flex items-center">
           <button
             type="button"
-            class="bg-secondary shrink-0 py-2 px-4 font-semibold rounded-full text-primary text-sm sm:text-base"
+            class="bg-secondary shrink-0 py-2 px-4 font-semibold rounded-full text-primary text-sm sm:text-base cursor-pointer"
             @click="togglePlayer('full', surah.audioFull[qari])"
           >
             <div v-if="!isKeyPlaying('full')" class="flex gap-2 items-center">
@@ -243,12 +397,6 @@ watch(activeAudio, (key) => {
               Jeda
             </div>
           </button>
-          <div class="w-full h-1 rounded-full bg-white/20 overflow-hidden">
-            <div
-              class="h-full bg-accent"
-              :style="{ width: (isActive('full') ? progress : 0) + '%' }"
-            ></div>
-          </div>
         </div>
         <div class="w-40 h-40 rounded-full absolute -top-10 -right-10 bg-white/10"></div>
       </div>
@@ -257,7 +405,9 @@ watch(activeAudio, (key) => {
         <div
           class="fixed right-4 z-40 flex flex-col items-end gap-4 md:bottom-6 lg:sticky lg:z-auto lg:shrink-0 lg:items-stretch lg:self-start"
           :class="
-            minimizeStore.isFocusMode ? 'bottom-4 lg:top-6 lg:w-fit' : 'bottom-24 lg:top-26 lg:w-62.5'
+            minimizeStore.isFocusMode
+              ? 'bottom-4 lg:top-6 lg:w-fit'
+              : 'bottom-24 lg:top-26 lg:w-62.5'
           "
         >
           <button
@@ -369,7 +519,7 @@ watch(activeAudio, (key) => {
           </div>
         </div>
 
-        <div class="w-full min-w-0">
+        <div class="w-full min-w-0" :class="activeAudio !== null ? 'pb-32' : ''">
           <div class="w-full my-4 sm:my-8">
             <img
               class="w-3/4 sm:w-1/2 max-w-100 mx-auto"
@@ -414,7 +564,7 @@ watch(activeAudio, (key) => {
                 </button>
                 <button
                   type="button"
-                  class="shrink-0 p-1 font-semibold text-primary/50"
+                  class="shrink-0 p-1 font-semibold text-primary/50 cursor-pointer"
                   @click="togglePlayer(index, ayat.audio[qari])"
                 >
                   <div v-if="!isKeyPlaying(index)" class="flex gap-2 items-center">
@@ -424,12 +574,6 @@ watch(activeAudio, (key) => {
                     <Pause :size="18" :stroke-width="2.5" />
                   </div>
                 </button>
-                <div
-                  v-if="isActive(index)"
-                  class="flex-1 max-w-50 h-1 ml-1 rounded-full bg-primary/20 overflow-hidden"
-                >
-                  <div class="h-full bg-primary" :style="{ width: progress + '%' }"></div>
-                </div>
               </div>
             </div>
           </div>
