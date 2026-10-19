@@ -2,6 +2,8 @@
 import SelectDropdown from '@/components/ui/SelectDropdown.vue'
 import ToggleSwitch from '@/components/ui/ToggleSwitch.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import { quranApi } from '@/services/quranApi'
+import { useBookmark } from '@/stores/bookmark'
 import { useMinimize } from '@/stores/minimize'
 import {
   Bookmark,
@@ -14,11 +16,11 @@ import {
   Settings2,
   TriangleAlert,
 } from '@lucide/vue'
-import axios from 'axios'
-import { computed, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 const minimizeStore = useMinimize()
+const bookmarkStore = useBookmark()
 const route = useRoute()
 const surah = ref('')
 const isLoading = ref(true)
@@ -93,6 +95,14 @@ function changeTranslateTextSize(step) {
   const next = translateTextSize.value + step
   if (next < 0 || next >= translateTextSizeList.length) return
   translateTextSize.value = next
+}
+
+function toggleBookmark(ayat) {
+  bookmarkStore.toggleBookmark({
+    surah: surah.value.nomor,
+    ayat: ayat.nomorAyat,
+    namaLatin: surah.value.namaLatin,
+  })
 }
 
 function togglePlayer(key, url) {
@@ -172,8 +182,7 @@ async function fetchSurah(id) {
   isLoading.value = true
   errorMessage.value = ''
   try {
-    const res = await axios.get(`https://equran.id/api/v2/surat/${id}`)
-    surah.value = res.data.data
+    surah.value = await quranApi.getSurah(id)
   } catch (e) {
     errorMessage.value = e.message
   } finally {
@@ -181,9 +190,18 @@ async function fetchSurah(id) {
   }
 }
 
+async function scrollToHashOrTop() {
+  await nextTick()
+  if (route.hash) {
+    document.querySelector(route.hash)?.scrollIntoView({ block: 'center' })
+  } else {
+    window.scrollTo({ top: 0 })
+  }
+}
+
 watch(
   () => route.params.id,
-  (id) => {
+  async (id) => {
     if (!id) return
     audio.pause()
     audio.src = ''
@@ -192,8 +210,8 @@ watch(
     currentTime.value = 0
     duration.value = 0
 
-    fetchSurah(id)
-    window.scrollTo({ top: 0 })
+    await fetchSurah(id)
+    scrollToHashOrTop()
   },
   { immediate: true },
 )
@@ -217,8 +235,10 @@ watch(qari, (newQari) => {
 
 watch(activeAudio, (key) => {
   if (!Number.isInteger(key)) return
+  const ayat = surah.value?.ayat?.[key]
+  if (!ayat) return
 
-  document.getElementById(`ayat-${key}`)?.scrollIntoView({
+  document.getElementById(`ayat-${ayat.nomorAyat}`)?.scrollIntoView({
     behavior: 'smooth',
     block: 'center',
   })
@@ -261,17 +281,8 @@ watch(activeAudio, (key) => {
       <div
         v-if="activeAudio !== null"
         class="fixed left-4 right-20 bottom-8 z-30 flex flex-col gap-3 bg-white p-4 rounded-2xl shadow-xl"
-        :class="minimizeStore.isFocusMode ? 'lg:left-60 lg:right-39' : 'lg:left-110 lg:right-39'"
+        :class="minimizeStore.isFocusMode ? 'lg:left-24 lg:right-24' : 'lg:left-[450px] lg:right-8'"
       >
-        <div class="flex items-center gap-3 text-xs text-gray-500">
-          <span class="w-9 text-right tabular-nums">{{ formatTime(currentTime) }}</span>
-          <div class="flex-1 py-2 cursor-pointer" @click="seek">
-            <div class="h-1.5 rounded-full bg-primary/20 overflow-hidden">
-              <div class="h-full bg-primary" :style="{ width: progress + '%' }"></div>
-            </div>
-          </div>
-          <span class="w-9 tabular-nums">{{ formatTime(duration) }}</span>
-        </div>
         <div class="flex items-center gap-4">
           <div class="flex-1 min-w-0 flex flex-col">
             <p class="font-semibold text-primary truncate">{{ surah.namaLatin }}</p>
@@ -361,6 +372,16 @@ watch(activeAudio, (key) => {
               {{ speed }}x
             </button>
           </div>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs text-gray-500">
+          <span class="w-9 text-right tabular-nums">{{ formatTime(currentTime) }}</span>
+          <div class="flex-1 py-2 cursor-pointer" @click="seek">
+            <div class="h-1.5 rounded-full bg-primary/20 overflow-hidden">
+              <div class="h-full bg-primary" :style="{ width: progress + '%' }"></div>
+            </div>
+          </div>
+          <span class="w-9 tabular-nums">{{ formatTime(duration) }}</span>
         </div>
       </div>
 
@@ -536,8 +557,8 @@ watch(activeAudio, (key) => {
                 minimizeStore.isFocusMode ? 'scroll-mt-6' : 'scroll-mt-28',
               ]"
               v-for="(ayat, index) in surah.ayat"
-              :key="index"
-              :id="`ayat-${index}`"
+              :key="ayat.nomorAyat"
+              :id="`ayat-${ayat.nomorAyat}`"
             >
               <p
                 dir="rtl"
@@ -559,8 +580,31 @@ watch(activeAudio, (key) => {
                 {{ ayat.teksIndonesia }}
               </p>
               <div class="mt-2 flex items-center">
-                <button class="shrink-0 pr-1 py-1 font-semibold text-primary/50">
-                  <Bookmark :size="18" :stroke-width="2.5" />
+                <button
+                  type="button"
+                  :aria-label="
+                    bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)
+                      ? 'Hapus bookmark'
+                      : 'Tambah bookmark'
+                  "
+                  :aria-pressed="bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)"
+                  class="shrink-0 pr-1 py-1 font-semibold cursor-pointer"
+                  :class="
+                    bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)
+                      ? 'text-primary'
+                      : 'text-primary/50'
+                  "
+                  @click="toggleBookmark(ayat)"
+                >
+                  <Bookmark
+                    :size="18"
+                    :stroke-width="2.5"
+                    :fill="
+                      bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)
+                        ? 'currentColor'
+                        : 'none'
+                    "
+                  />
                 </button>
                 <button
                   type="button"
