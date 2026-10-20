@@ -100,6 +100,7 @@ function changeTranslateTextSize(step) {
 function toggleBookmark(ayat) {
   bookmarkStore.toggleBookmark({
     surah: surah.value.nomor,
+    arti: surah.value.arti,
     ayat: ayat.nomorAyat,
     namaLatin: surah.value.namaLatin,
   })
