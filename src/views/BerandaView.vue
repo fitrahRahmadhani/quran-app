@@ -2,6 +2,7 @@
 import SurahCard from '@/components/surahs/SurahCard.vue'
 import BaseBadge from '@/components/ui/BaseBadge.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import { useBookmark } from '@/stores/bookmark'
 import { Bookmark, Search } from '@lucide/vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -9,6 +10,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const inputSearch = ref('')
 const errorMessage = ref('')
+const bookmark = useBookmark()
 
 const suggestionSurahs = [
   { id: 1, title: 'Al-Fatihah' },
@@ -145,17 +147,27 @@ function handleSuggestion(value) {
         />
       </div>
     </div>
-    <div class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4">
+    <RouterLink
+      class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4"
+      v-if="bookmark.bookmarks.length > 0"
+      :to="{
+        name: 'surah-read',
+        params: { id: bookmark.bookmarks[0].surah },
+        hash: `#ayat-${bookmark.bookmarks[0].ayat}`,
+      }"
+    >
       <div class="flex items-center gap-4">
         <div class="py-2 px-2 rounded-lg bg-secondary shadow-xl shadow-secondary/20 text-primary">
           <Bookmark :size="18" />
         </div>
         <div class="text-accent">
-          <p class="font-medium">Al Fatihah</p>
-          <p class="text-xs font-light">Pembuka • 7 ayat</p>
+          <p class="font-medium">{{ bookmark.bookmarks[0].namaLatin }}</p>
+          <p class="text-xs font-light">
+            {{ bookmark.bookmarks[0].arti }} • ayat ke {{ bookmark.bookmarks[0].ayat }}
+          </p>
         </div>
       </div>
       <p class="text-accent">Lanjut membaca →</p>
-    </div>
+    </RouterLink>
   </DefaultLayout>
 </template>
