@@ -5,6 +5,7 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { quranApi } from '@/services/quranApi'
 import { useBookmark } from '@/stores/bookmark'
 import { useMinimize } from '@/stores/minimize'
+import { toArabicNumber } from '@/utils/formatText'
 import {
   Bookmark,
   Expand,
@@ -61,7 +62,6 @@ const progress = computed(() => {
 })
 const indonesianTranslate = ref(true)
 const transliteration = ref(true)
-const toArabicNumber = (n) => n.toLocaleString('ar-EG')
 
 const speedOptions = [0.75, 1, 1.25, 1.5, 2]
 const speedIndex = ref(1)

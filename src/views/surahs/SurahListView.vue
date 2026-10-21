@@ -5,12 +5,14 @@ import { Bookmark, Search, TriangleAlert } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
+import { useBookmark } from '@/stores/bookmark'
 
 const surahs = ref([])
 const loading = ref(true)
 const error = ref(null)
 const route = useRoute()
 const router = useRouter()
+const bookmarkStore = useBookmark()
 const inputSearch = ref(String(route.query.q ?? ''))
 
 const searchStatusMessage = computed(() => {
@@ -59,7 +61,7 @@ onMounted(async () => {
       Temukan surah yang ingin kamu baca, atau jelajahi sesuai urutan mushaf.
     </p>
     <form
-      class="sticky top-22 flex items-center justify-between bg-white shadow-lg my-6 border border-gray-200 p-4 rounded-3xl gap-4 transition-all duration-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20"
+      class="sticky top-8 md:top-22 flex items-center justify-between bg-white shadow-lg my-6 border border-gray-200 p-4 rounded-2xl gap-4 transition-all duration-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20"
       @submit.prevent="onSearch"
     >
       <label for="search-bar" class="flex items-center gap-2 w-full">
@@ -79,18 +81,28 @@ onMounted(async () => {
         Cari
       </button>
     </form>
-    <div class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4">
+    <RouterLink
+      class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4"
+      v-if="bookmarkStore.bookmark"
+      :to="{
+        name: 'surah-read',
+        params: { id: bookmarkStore.bookmark.surah },
+        hash: `#ayat-${bookmarkStore.bookmark.ayat}`,
+      }"
+    >
       <div class="flex items-center gap-4">
         <div class="py-2 px-2 rounded-lg bg-secondary shadow-xl shadow-secondary/20 text-primary">
           <Bookmark :size="18" />
         </div>
         <div class="text-accent">
-          <p class="font-medium">Al Fatihah</p>
-          <p class="text-xs font-light">Pembuka • 7 ayat</p>
+          <p class="font-medium">{{ bookmarkStore.bookmark.namaLatin }}</p>
+          <p class="text-xs font-light">
+            {{ bookmarkStore.bookmark.arti }} • ayat ke {{ bookmarkStore.bookmark.ayat }}
+          </p>
         </div>
       </div>
       <p class="text-accent">Lanjut membaca →</p>
-    </div>
+    </RouterLink>
     <div v-if="loading" class="flex flex-col items-center py-10 space-y-2 text-primary/50">
       <img class="w-12" src="@/assets/icons/loading-spinner.svg" alt="Memuat..." />
       <p class="text-sm italic">Memuat Surah...</p>
