@@ -10,7 +10,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const inputSearch = ref('')
 const errorMessage = ref('')
-const bookmark = useBookmark()
+const bookmarkStore = useBookmark()
 
 const suggestionSurahs = [
   { id: 1, title: 'Al-Fatihah' },
@@ -149,11 +149,11 @@ function handleSuggestion(value) {
     </div>
     <RouterLink
       class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4"
-      v-if="bookmark.bookmarks.length > 0"
+      v-if="bookmarkStore.bookmark"
       :to="{
         name: 'surah-read',
-        params: { id: bookmark.bookmarks[0].surah },
-        hash: `#ayat-${bookmark.bookmarks[0].ayat}`,
+        params: { id: bookmarkStore.bookmark.surah },
+        hash: `#ayat-${bookmarkStore.bookmark.ayat}`,
       }"
     >
       <div class="flex items-center gap-4">
@@ -161,9 +161,9 @@ function handleSuggestion(value) {
           <Bookmark :size="18" />
         </div>
         <div class="text-accent">
-          <p class="font-medium">{{ bookmark.bookmarks[0].namaLatin }}</p>
+          <p class="font-medium">{{ bookmarkStore.bookmark.namaLatin }}</p>
           <p class="text-xs font-light">
-            {{ bookmark.bookmarks[0].arti }} • ayat ke {{ bookmark.bookmarks[0].ayat }}
+            {{ bookmarkStore.bookmark.arti }} • ayat ke {{ bookmarkStore.bookmark.ayat }}
           </p>
         </div>
       </div>
