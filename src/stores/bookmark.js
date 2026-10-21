@@ -3,34 +3,28 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
 export const useBookmark = defineStore('bookmark', () => {
-  const bookmarks = ref(bookmarkStorage.load())
+  const bookmark = ref(bookmarkStorage.load())
 
-  watch(bookmarks, (value) => bookmarkStorage.save(value), { deep: true })
-
-  function findIndex(surahNomor, ayatNomor) {
-    return bookmarks.value.findIndex((b) => b.surah === surahNomor && b.ayat === ayatNomor)
-  }
+  watch(bookmark, (value) => bookmarkStorage.save(value), { deep: true })
 
   function isBookmarked(surahNomor, ayatNomor) {
-    return findIndex(surahNomor, ayatNomor) !== -1
+    return bookmark.value?.surah === surahNomor && bookmark.value?.ayat === ayatNomor
   }
 
   function toggleBookmark(item) {
-    const index = findIndex(item.surah, item.ayat)
-    if (index === -1) {
-      bookmarks.value.push({ ...item, savedAt: Date.now() })
+    if (isBookmarked(item.surah, item.ayat)) {
+      bookmark.value = null
     } else {
-      bookmarks.value.splice(index, 1)
+      bookmark.value = { ...item, savedAt: Date.now() }
     }
   }
 
-  function removeBookmark(surahNomor, ayatNomor) {
-    const index = findIndex(surahNomor, ayatNomor)
-    if (index !== -1) bookmarks.value.splice(index, 1)
+  function removeBookmark() {
+    bookmark.value = null
   }
 
   return {
-    bookmarks,
+    bookmark,
     isBookmarked,
     toggleBookmark,
     removeBookmark,

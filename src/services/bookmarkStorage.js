@@ -1,19 +1,27 @@
-const STORAGE_KEY = 'bookmarks'
+const STORAGE_KEY = 'bookmark'
+
+const isPlainObject = (value) =>
+  value !== null && typeof value === 'object' && !Array.isArray(value)
 
 export const bookmarkStorage = {
   load() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
-      const parsed = raw ? JSON.parse(raw) : []
-      return Array.isArray(parsed) ? parsed : []
+      if (!raw) return null
+      const parsed = JSON.parse(raw)
+      return isPlainObject(parsed) ? parsed : null
     } catch {
-      return []
+      return null
     }
   },
 
-  save(bookmarks) {
+  save(bookmark) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks))
+      if (bookmark) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmark))
+      } else {
+        localStorage.removeItem(STORAGE_KEY)
+      }
     } catch {
       return
     }
