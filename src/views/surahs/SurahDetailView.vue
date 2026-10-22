@@ -586,7 +586,7 @@ watch(activeAudio, (key) => {
           <div
             v-if="activeAudio !== null"
             class="sticky z-30 mt-8 mr-16 lg:mr-0 flex flex-col gap-3 bg-white p-4 rounded-2xl shadow-xl"
-            :class="minimizeStore.isFocusMode ? 'bottom-6' : 'bottom-24'"
+            :class="minimizeStore.isFocusMode ? 'bottom-6 ' : 'bottom-24 lg:bottom-6'"
           >
             <div class="flex items-center gap-4">
               <div class="flex-1 min-w-0 flex flex-col">
