@@ -3,9 +3,9 @@ import SurahCard from '@/components/surahs/SurahCard.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { Bookmark, Search, TriangleAlert } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
-import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookmark } from '@/stores/bookmark'
+import { quranApi } from '@/services/quranApi'
 
 const surahs = ref([])
 const loading = ref(true)
@@ -38,8 +38,7 @@ const filteredSurah = computed(() => {
 
 onMounted(async () => {
   try {
-    const res = await axios.get('https://equran.id/api/v2/surat')
-    surahs.value = res.data.data
+    surahs.value = await quranApi.getAllSurah()
   } catch (err) {
     error.value = err.message
   } finally {
