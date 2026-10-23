@@ -1,4 +1,5 @@
 <script setup>
+import ErrorFetch from '@/components/ui/ErrorFetch.vue'
 import SelectDropdown from '@/components/ui/SelectDropdown.vue'
 import ToggleSwitch from '@/components/ui/ToggleSwitch.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
@@ -266,21 +267,7 @@ watch(activeAudio, (key) => {
       <img class="w-12" src="@/assets/icons/loading-spinner.svg" alt="Memuat..." />
       <p class="text-sm italic">Memuat Surah...</p>
     </div>
-    <div
-      v-else-if="errorMessage"
-      class="flex flex-col items-center text-center gap-4 mt-12 p-6 sm:p-8 bg-white border border-red-100 rounded-3xl"
-    >
-      <div class="p-4 rounded-full bg-red-50 text-red-500">
-        <TriangleAlert :size="40" />
-      </div>
-
-      <div>
-        <h3 class="text-xl font-bold text-primary">Gagal Memuat Data</h3>
-        <p class="mt-1 text-gray-500 max-w-md">
-          Terjadi kesalahan saat memuat data. Silakan coba lagi
-        </p>
-      </div>
-    </div>
+    <ErrorFetch v-else-if="errorMessage" />
 
     <div v-else class="w-full">
       <div
