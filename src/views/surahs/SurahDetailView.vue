@@ -1,5 +1,6 @@
 <script setup>
 import SurahAmin from '@/components/surahs/SurahAmin.vue'
+import SurahBismillah from '@/components/surahs/SurahBismillah.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
 import SelectDropdown from '@/components/ui/SelectDropdown.vue'
@@ -424,13 +425,7 @@ watch(activeAudio, (key) => {
         </div>
 
         <div class="w-full min-w-0">
-          <div class="w-full my-4 sm:my-8">
-            <img
-              class="w-3/4 sm:w-1/2 max-w-100 mx-auto"
-              src="@/assets/decorative/bismillah.svg"
-              alt="Bismillahirrahmanirrahim"
-            />
-          </div>
+          <SurahBismillah />
 
           <div class="mt-8 sm:mt-20 divide-y divide-primary/20">
             <div
