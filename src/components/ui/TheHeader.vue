@@ -2,13 +2,21 @@
 import { BookOpen, House, ScrollText } from '@lucide/vue'
 import { onClickOutside } from '@vueuse/core'
 import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const navItems = [
-  { label: 'Beranda', to: '/' },
-  { label: 'Daftar Surah', to: '/surah' },
-  { label: 'Daftar Juz', to: '/juz' },
+  { label: 'Beranda', to: '/', icon: House },
+  { label: 'Daftar Surah', to: '/surah', icon: BookOpen },
+  { label: 'Daftar Juz', to: '/juz', icon: ScrollText },
 ]
+
+const desktopActive = '!text-primary font-semibold after:!scale-x-100'
+const tabletActive = '!bg-primary/5 !text-primary font-semibold'
+
+const isActive = (to) =>
+  to === '/' ? route.path === '/' : route.path === to || route.path.startsWith(`${to}/`)
 
 const menuOpen = ref(false)
 
@@ -26,26 +34,26 @@ onClickOutside(
 
 <template>
   <header
-    class="sticky top-0 z-50 w-full border-b border-[#173C35]/10 bg-white/85 backdrop-blur hidden md:block"
+    class="sticky top-0 z-50 hidden w-full border-b border-primary/10 bg-white/85 backdrop-blur md:block"
   >
     <div class="mx-auto flex h-20 max-w-360 items-center justify-between px-4 sm:px-6 lg:px-8">
       <RouterLink
         to="/"
-        class="flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#173C35]"
+        class="flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
       >
         <img class="w-11" src="@/assets/logo/quran-logogram.svg" alt="" />
-        <h1 class="text-2xl font-semibold tracking-tight text-[#173C35]">Quran</h1>
+        <span class="text-2xl font-semibold tracking-tight text-primary">Quran</span>
       </RouterLink>
 
-      <nav class="hidden mx-auto lg:block" aria-label="Navigasi utama">
+      <nav class="mx-auto hidden lg:block" aria-label="Navigasi utama">
         <ul class="flex items-center gap-10">
-          <li v-for="item in navItems" :key="item.to">
+          <li v-for="nav in navItems" :key="nav.to">
             <RouterLink
-              :to="item.to"
-              class="relative block py-2 font-medium text-gray-500 transition-colors hover:text-[#173C35] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#173C35] after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-[#B8934A] after:transition-transform hover:after:scale-x-100"
-              active-class="!text-[#173C35] font-semibold after:!scale-x-100"
+              :to="nav.to"
+              class="relative block py-2 font-medium text-gray-500 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-[#B8934A] after:transition-transform hover:after:scale-x-100"
+              :class="isActive(nav.to) ? desktopActive : ''"
             >
-              {{ item.label }}
+              {{ nav.label }}
             </RouterLink>
           </li>
         </ul>
@@ -54,7 +62,7 @@ onClickOutside(
       <button
         ref="menuButton"
         type="button"
-        class="grid size-11 place-items-center rounded-lg text-[#173C35] transition-colors hover:bg-[#173C35]/5 focus-visible:outline-2 focus-visible:outline-[#173C35] md:block lg:hidden"
+        class="grid size-11 place-items-center rounded-lg text-primary transition-colors hover:bg-primary/5 focus-visible:outline-2 focus-visible:outline-primary lg:hidden"
         :aria-expanded="menuOpen"
         aria-controls="menu-tablet"
         :aria-label="menuOpen ? 'Tutup menu' : 'Buka menu'"
@@ -95,21 +103,21 @@ onClickOutside(
     leave-to-class="opacity-0 -translate-y-2 scale-95"
   >
     <nav
-      ref="menuTablet"
       v-show="menuOpen"
       id="menu-tablet"
-      class="w-fit z-50 border-t border-[#173C35]/10 bg-white rounded-xl top-24 fixed right-5 shadow-lg origin-top-right md:block lg:hidden"
+      ref="menuTablet"
+      class="fixed right-5 top-24 z-50 w-fit origin-top-right rounded-xl border-t border-primary/10 bg-white shadow-lg lg:hidden"
       aria-label="Navigasi utama"
     >
       <ul class="mx-auto w-64 space-y-1 p-4">
-        <li v-for="item in navItems" :key="item.to">
+        <li v-for="nav in navItems" :key="nav.to">
           <RouterLink
-            :to="item.to"
-            class="block rounded-lg px-3 py-3 font-medium text-gray-500 transition-colors hover:bg-[#173C35]/5 hover:text-[#173C35]"
-            active-class="!bg-[#173C35]/5 !text-[#173C35] font-semibold"
+            :to="nav.to"
+            class="block rounded-lg px-3 py-3 font-medium text-gray-500 transition-colors hover:bg-primary/5 hover:text-primary"
+            :class="isActive(nav.to) ? tabletActive : ''"
             @click="menuOpen = false"
           >
-            {{ item.label }}
+            {{ nav.label }}
           </RouterLink>
         </li>
       </ul>
@@ -118,22 +126,22 @@ onClickOutside(
 
   <nav
     id="menu-mobile"
-    class="w-full h-20 fixed bottom-0 bg-white md:hidden"
+    class="fixed bottom-0 h-20 w-full bg-white pb-[env(safe-area-inset-bottom)] md:hidden"
     aria-label="Navigasi utama"
   >
-    <div class="max-w-[80%] h-full mx-auto">
-      <ul class="h-full w-full flex items-center justify-between">
-        <li class="flex flex-col items-center gap-1 text-[#B8934A] rounded-full">
-          <House />
-          <span class="text-xs font-semibold text-[#173C35]">Beranda</span>
-        </li>
-        <li class="flex flex-col items-center gap-1 text-gray-300 rounded-full">
-          <BookOpen />
-          <span class="text-xs">Daftar Surah</span>
-        </li>
-        <li class="flex flex-col items-center gap-1 text-gray-300 rounded-full">
-          <ScrollText />
-          <span class="text-xs">Daftar Juz</span>
+    <div class="mx-auto h-full max-w-[80%]">
+      <ul class="flex h-full w-full items-center justify-between">
+        <li v-for="nav in navItems" :key="nav.to">
+          <RouterLink
+            :to="nav.to"
+            class="group flex flex-col items-center gap-1"
+            :class="{ 'is-active': isActive(nav.to) }"
+          >
+            <component :is="nav.icon" class="text-gray-300 group-[.is-active]:text-[#B8934A]" />
+            <span class="text-xs font-semibold text-gray-300 group-[.is-active]:text-primary">
+              {{ nav.label }}
+            </span>
+          </RouterLink>
         </li>
       </ul>
     </div>
