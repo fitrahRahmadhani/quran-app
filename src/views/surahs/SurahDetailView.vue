@@ -1,5 +1,7 @@
 <script setup>
-import ErrorFetch from '@/components/ui/ErrorFetch.vue'
+import SurahAmin from '@/components/surahs/SurahAmin.vue'
+import FetchError from '@/components/ui/FetchError.vue'
+import FetchLoading from '@/components/ui/FetchLoading.vue'
 import SelectDropdown from '@/components/ui/SelectDropdown.vue'
 import ToggleSwitch from '@/components/ui/ToggleSwitch.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
@@ -262,12 +264,8 @@ watch(activeAudio, (key) => {
       </RouterLink>
       <p class="text-sm font-semibold text-primary">/ Surah</p>
     </div>
-
-    <div v-if="isLoading" class="flex flex-col items-center py-10 space-y-2 text-primary/50">
-      <img class="w-12" src="@/assets/icons/loading-spinner.svg" alt="Memuat..." />
-      <p class="text-sm italic">Memuat Surah...</p>
-    </div>
-    <ErrorFetch v-else-if="errorMessage" />
+    <FetchLoading v-if="isLoading" />
+    <FetchError v-else-if="errorMessage" />
 
     <div v-else class="w-full">
       <div
@@ -512,11 +510,7 @@ watch(activeAudio, (key) => {
             </div>
           </div>
 
-          <div class="w-full bg-primary/20 p-6 sm:p-8 rounded-2xl text-center mt-8">
-            <p class="font-quran text-4xl sm:text-5xl text-primary">آمِيْن</p>
-            <p class="mt-6 sm:mt-8 text-primary">Aamiin</p>
-            <p class="mt-2">Ya Allah, kabulkanlah</p>
-          </div>
+          <SurahAmin />
 
           <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 mt-8">
             <RouterLink
