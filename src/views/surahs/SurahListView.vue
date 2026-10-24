@@ -9,6 +9,7 @@ import { quranApi } from '@/services/quranApi'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import SurahBookmark from '@/components/surahs/SurahBookmark.vue'
+import BaseTitle from '@/components/ui/BaseTitle.vue'
 
 const surahs = ref([])
 const loading = ref(true)
@@ -58,10 +59,7 @@ onMounted(async () => {
       </RouterLink>
       <p class="text-sm font-semibold text-primary">/ Daftar Surah</p>
     </div>
-    <h2 class="text-4xl font-bold text-primary">{{ searchStatusMessage }}</h2>
-    <p class="text-primary mt-2">
-      Temukan surah yang ingin kamu baca, atau jelajahi sesuai urutan mushaf.
-    </p>
+    <BaseTitle :title="searchStatusMessage" />
     <form
       class="sticky top-8 md:top-22 flex items-center justify-between bg-white shadow-lg my-6 border border-gray-200 p-4 rounded-2xl gap-4 transition-all duration-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20"
       @submit.prevent="onSearch"
