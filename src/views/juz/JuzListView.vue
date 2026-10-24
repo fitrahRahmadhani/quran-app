@@ -1,5 +1,7 @@
 <script setup>
 import SurahCard from '@/components/surahs/SurahCard.vue'
+import FetchError from '@/components/ui/FetchError.vue'
+import FetchLoading from '@/components/ui/FetchLoading.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { quranApi } from '@/services/quranApi'
 import { TriangleAlert } from '@lucide/vue'
@@ -82,30 +84,9 @@ const juzList = computed(() => {
     <p class="text-primary mt-2">Jelajahi Al-Qur'an per juz dan temukan surah-surah di dalamnya.</p>
 
     <div class="my-6">
-      <!-- Loading -->
-      <div v-if="loading" class="flex flex-col items-center py-10 space-y-2 text-primary/50">
-        <img class="w-12" src="@/assets/icons/loading-spinner.svg" alt="Memuat..." />
-        <p class="text-sm italic">Memuat Surah...</p>
-      </div>
+      <FetchLoading v-if="loading" />
+      <FetchError v-else-if="error" />
 
-      <!-- Error -->
-      <div
-        v-else-if="error"
-        class="flex flex-col items-center text-center gap-4 mt-12 p-8 bg-white border border-red-100 rounded-3xl"
-      >
-        <div class="p-4 rounded-full bg-red-50 text-red-500">
-          <TriangleAlert :size="40" />
-        </div>
-
-        <div>
-          <h3 class="text-xl font-bold text-primary">Gagal Memuat Data</h3>
-          <p class="mt-1 text-gray-500 max-w-md">
-            Terjadi kesalahan saat memuat data. Silakan coba lagi
-          </p>
-        </div>
-      </div>
-
-      <!-- Daftar juz -->
       <template v-else>
         <div v-for="juz in juzList" :key="juz.juz" class="mb-10">
           <p class="font-bold text-primary">Juz {{ juz.juz }}</p>

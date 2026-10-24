@@ -11,17 +11,7 @@ import { quranApi } from '@/services/quranApi'
 import { useBookmark } from '@/stores/bookmark'
 import { useMinimize } from '@/stores/minimize'
 import { toArabicNumber } from '@/utils/formatText'
-import {
-  Bookmark,
-  Expand,
-  Minimize,
-  Minus,
-  Pause,
-  Play,
-  Plus,
-  Settings2,
-  TriangleAlert,
-} from '@lucide/vue'
+import { Bookmark, Expand, Minimize, Minus, Pause, Play, Plus, Settings2 } from '@lucide/vue'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
