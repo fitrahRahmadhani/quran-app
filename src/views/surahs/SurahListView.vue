@@ -1,11 +1,13 @@
 <script setup>
 import SurahCard from '@/components/surahs/SurahCard.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import { Bookmark, Search, TriangleAlert } from '@lucide/vue'
+import { Bookmark, Search } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookmark } from '@/stores/bookmark'
 import { quranApi } from '@/services/quranApi'
+import FetchLoading from '@/components/ui/FetchLoading.vue'
+import FetchError from '@/components/ui/FetchError.vue'
 
 const surahs = ref([])
 const loading = ref(true)
@@ -102,25 +104,8 @@ onMounted(async () => {
       </div>
       <p class="text-accent">Lanjut membaca →</p>
     </RouterLink>
-    <div v-if="loading" class="flex flex-col items-center py-10 space-y-2 text-primary/50">
-      <img class="w-12" src="@/assets/icons/loading-spinner.svg" alt="Memuat..." />
-      <p class="text-sm italic">Memuat Surah...</p>
-    </div>
-    <div
-      v-else-if="error"
-      class="flex flex-col items-center text-center gap-4 mt-12 p-8 bg-white border border-red-100 rounded-3xl"
-    >
-      <div class="p-4 rounded-full bg-red-50 text-red-500">
-        <TriangleAlert :size="40" />
-      </div>
-
-      <div>
-        <h3 class="text-xl font-bold text-primary">Gagal Memuat Data</h3>
-        <p class="mt-1 text-gray-500 max-w-md">
-          Terjadi kesalahan saat memuat data. Silakan coba lagi
-        </p>
-      </div>
-    </div>
+    <FetchLoading v-if="loading" />
+    <FetchError v-else-if="error" />
 
     <div v-else-if="filteredSurah.length === 0" class="mt-12 text-center text-gray-500">
       Surah "{{ route.query.q }}" tidak ditemukan.
