@@ -1,5 +1,6 @@
 <script setup>
 import SurahCard from '@/components/surahs/SurahCard.vue'
+import SurahList from '@/components/surahs/SurahList.vue'
 import BaseTitle from '@/components/ui/BaseTitle.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
@@ -89,18 +90,7 @@ const juzList = computed(() => {
         <div v-for="juz in juzList" :key="juz.juz" class="mb-10">
           <p class="font-bold text-primary">Juz {{ juz.juz }}</p>
 
-          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-4">
-            <SurahCard
-              v-for="surah in juz.surah"
-              :key="surah.nomor"
-              :id="surah.nomor"
-              :number="surah.nomor"
-              :title="surah.namaLatin"
-              :arabic-title="surah.nama"
-              :number-of-verses="surah.jumlahAyat"
-              :meaning="surah.arti"
-            />
-          </div>
+          <SurahList :surahs="juz.surah" />
         </div>
       </template>
     </div>
