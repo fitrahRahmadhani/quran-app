@@ -1,6 +1,7 @@
 <script setup>
 import SurahAmin from '@/components/surahs/SurahAmin.vue'
 import SurahBismillah from '@/components/surahs/SurahBismillah.vue'
+import SurahNav from '@/components/surahs/SurahNav.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
 import SelectDropdown from '@/components/ui/SelectDropdown.vue'
@@ -507,57 +508,10 @@ watch(activeAudio, (key) => {
 
           <SurahAmin />
 
-          <div class="w-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 mt-8">
-            <RouterLink
-              v-if="surah.suratSebelumnya"
-              :to="{ name: 'surah-read', params: { id: surah.suratSebelumnya.nomor } }"
-              class="sm:col-start-1 flex items-center justify-between gap-4 p-4 bg-white rounded-2xl"
-            >
-              <div class="flex items-center gap-3 sm:gap-4 min-w-0">
-                <div class="shrink-0 rounded-lg bg-primary/10 text-primary p-2">
-                  <p dir="rtl" lang="ar" class="font-quran text-2xl sm:text-3xl leading-none">
-                    &#x06DD;{{ toArabicNumber(surah.suratSebelumnya.nomor) }}
-                  </p>
-                </div>
-                <div class="text-primary min-w-0">
-                  <p class="font-medium truncate">{{ surah.suratSebelumnya.namaLatin }}</p>
-                  <p class="text-xs font-light">{{ surah.suratSebelumnya.jumlahAyat }} ayat</p>
-                </div>
-              </div>
-              <p
-                dir="rtl"
-                lang="ar"
-                class="font-quran text-2xl sm:text-3xl text-primary self-baseline shrink-0"
-              >
-                {{ surah.suratSebelumnya.nama }}
-              </p>
-            </RouterLink>
-
-            <RouterLink
-              v-if="surah.suratSelanjutnya"
-              :to="{ name: 'surah-read', params: { id: surah.suratSelanjutnya.nomor } }"
-              class="sm:col-start-2 flex items-center justify-between gap-4 p-4 bg-primary rounded-2xl"
-            >
-              <div class="flex items-center gap-3 sm:gap-4 min-w-0">
-                <div class="shrink-0 rounded-lg bg-white/10 text-accent p-2">
-                  <p dir="rtl" lang="ar" class="font-quran text-2xl sm:text-3xl leading-none">
-                    &#x06DD;{{ toArabicNumber(surah.suratSelanjutnya.nomor) }}
-                  </p>
-                </div>
-                <div class="text-white min-w-0">
-                  <p class="font-medium truncate">{{ surah.suratSelanjutnya.namaLatin }}</p>
-                  <p class="text-xs font-light">{{ surah.suratSelanjutnya.jumlahAyat }} ayat</p>
-                </div>
-              </div>
-              <p
-                dir="rtl"
-                lang="ar"
-                class="font-quran text-2xl sm:text-3xl text-accent self-baseline shrink-0"
-              >
-                {{ surah.suratSelanjutnya.nama }}
-              </p>
-            </RouterLink>
-          </div>
+          <SurahNav
+            :prev-surah="surah.suratSebelumnya || null"
+            :next-surah="surah.suratSelanjutnya || null"
+          />
 
           <div
             v-if="activeAudio !== null"
