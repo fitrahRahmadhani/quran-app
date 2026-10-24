@@ -1,10 +1,10 @@
 <script setup>
 import SurahCard from '@/components/surahs/SurahCard.vue'
+import BaseTitle from '@/components/ui/BaseTitle.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { quranApi } from '@/services/quranApi'
-import { TriangleAlert } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 
 const juzAlQuran = [
@@ -60,7 +60,6 @@ onMounted(async () => {
   }
 })
 
-// Gabungkan nomor surah di tiap juz dengan data lengkap surah dari API
 const juzList = computed(() => {
   const surahMap = new Map(surahs.value.map((s) => [s.nomor, s]))
 
@@ -80,8 +79,7 @@ const juzList = computed(() => {
       <p class="text-sm font-semibold text-primary">/ Daftar Juz</p>
     </div>
 
-    <h2 class="text-4xl font-bold text-primary">Daftar Juz</h2>
-    <p class="text-primary mt-2">Jelajahi Al-Qur'an per juz dan temukan surah-surah di dalamnya.</p>
+    <BaseTitle :title="'Daftar Juz'" />
 
     <div class="my-6">
       <FetchLoading v-if="loading" />
