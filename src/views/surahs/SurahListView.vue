@@ -1,13 +1,14 @@
 <script setup>
 import SurahCard from '@/components/surahs/SurahCard.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import { Bookmark, Search } from '@lucide/vue'
+import { Search } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookmark } from '@/stores/bookmark'
 import { quranApi } from '@/services/quranApi'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
 import FetchError from '@/components/ui/FetchError.vue'
+import SurahBookmark from '@/components/surahs/SurahBookmark.vue'
 
 const surahs = ref([])
 const loading = ref(true)
@@ -82,28 +83,7 @@ onMounted(async () => {
         Cari
       </button>
     </form>
-    <RouterLink
-      class="flex p-4 bg-primary rounded-2xl justify-between items-center mt-4"
-      v-if="bookmarkStore.bookmark"
-      :to="{
-        name: 'surah-read',
-        params: { id: bookmarkStore.bookmark.surah },
-        hash: `#ayat-${bookmarkStore.bookmark.ayat}`,
-      }"
-    >
-      <div class="flex items-center gap-4">
-        <div class="py-2 px-2 rounded-lg bg-secondary shadow-xl shadow-secondary/20 text-primary">
-          <Bookmark :size="18" />
-        </div>
-        <div class="text-accent">
-          <p class="font-medium">{{ bookmarkStore.bookmark.namaLatin }}</p>
-          <p class="text-xs font-light">
-            {{ bookmarkStore.bookmark.arti }} • ayat ke {{ bookmarkStore.bookmark.ayat }}
-          </p>
-        </div>
-      </div>
-      <p class="text-accent">Lanjut membaca →</p>
-    </RouterLink>
+    <SurahBookmark :bookmark="bookmarkStore.bookmark || null" />
     <FetchLoading v-if="loading" />
     <FetchError v-else-if="error" />
 
