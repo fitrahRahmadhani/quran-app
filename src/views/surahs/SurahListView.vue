@@ -10,6 +10,7 @@ import FetchLoading from '@/components/ui/FetchLoading.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import SurahBookmark from '@/components/surahs/SurahBookmark.vue'
 import BaseTitle from '@/components/ui/BaseTitle.vue'
+import SurahList from '@/components/surahs/SurahList.vue'
 
 const surahs = ref([])
 const loading = ref(true)
@@ -89,17 +90,6 @@ onMounted(async () => {
       Surah "{{ route.query.q }}" tidak ditemukan.
     </div>
 
-    <div v-else class="grid md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-8">
-      <SurahCard
-        v-for="surah in filteredSurah"
-        :key="surah.nomor"
-        :id="surah.nomor"
-        :number="surah.nomor"
-        :title="surah.namaLatin"
-        :arabic-title="surah.nama"
-        :number-of-verses="surah.jumlahAyat"
-        :meaning="surah.arti"
-      />
-    </div>
+    <SurahList :surahs="filteredSurah" />
   </DefaultLayout>
 </template>
