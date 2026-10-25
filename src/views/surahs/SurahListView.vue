@@ -11,6 +11,7 @@ import FetchError from '@/components/ui/FetchError.vue'
 import SurahBookmark from '@/components/surahs/SurahBookmark.vue'
 import BaseTitle from '@/components/ui/BaseTitle.vue'
 import SurahList from '@/components/surahs/SurahList.vue'
+import BaseBreadcrumb from '@/components/ui/BaseBreadcrumb.vue'
 
 const surahs = ref([])
 const loading = ref(true)
@@ -19,6 +20,7 @@ const route = useRoute()
 const router = useRouter()
 const bookmarkStore = useBookmark()
 const inputSearch = ref(String(route.query.q ?? ''))
+const breadcrumbs = [{ label: 'Beranda', to: { name: 'beranda' } }, { label: 'Daftar Surah' }]
 
 const searchStatusMessage = computed(() => {
   const q = String(route.query.q ?? '').trim()
@@ -54,12 +56,7 @@ onMounted(async () => {
 
 <template>
   <DefaultLayout>
-    <div class="flex gap-2 mb-6">
-      <RouterLink :to="{ name: 'beranda' }"
-        ><p class="text-sm text-gray-500">Beranda</p>
-      </RouterLink>
-      <p class="text-sm font-semibold text-primary">/ Daftar Surah</p>
-    </div>
+    <BaseBreadcrumb :items="breadcrumbs" />
     <BaseTitle :title="searchStatusMessage" />
     <form
       class="sticky top-8 md:top-22 flex items-center justify-between bg-white shadow-lg my-6 border border-gray-200 p-4 rounded-2xl gap-4 transition-all duration-200 focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/20"
