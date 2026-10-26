@@ -2,6 +2,7 @@
 import SurahAmin from '@/components/surahs/SurahAmin.vue'
 import SurahBismillah from '@/components/surahs/SurahBismillah.vue'
 import SurahNav from '@/components/surahs/SurahNav.vue'
+import BaseBreadcrumb from '@/components/ui/BaseBreadcrumb.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
 import SelectDropdown from '@/components/ui/SelectDropdown.vue'
@@ -18,6 +19,11 @@ import { RouterLink, useRoute } from 'vue-router'
 const minimizeStore = useMinimize()
 const bookmarkStore = useBookmark()
 const route = useRoute()
+const breadcrumbs = computed(() => [
+  { label: 'Beranda', to: { name: 'beranda' } },
+  { label: 'Daftar Surah', to: { name: 'surah' } },
+  { label: surah.value?.namaLatin || 'Surah' },
+])
 const surah = ref('')
 const isLoading = ref(true)
 const errorMessage = ref('')
@@ -187,6 +193,7 @@ async function fetchSurah(id) {
     errorMessage.value = e.message
   } finally {
     isLoading.value = false
+    breadcrumbs.push({ label: surah.value.nama })
   }
 }
 
@@ -247,15 +254,7 @@ watch(activeAudio, (key) => {
 
 <template>
   <DefaultLayout>
-    <div v-if="!minimizeStore.isFocusMode" class="hidden flex-wrap gap-x-2 gap-y-1 mb-6 md:flex">
-      <RouterLink :to="{ name: 'beranda' }"
-        ><p class="text-sm text-gray-500">Beranda</p>
-      </RouterLink>
-      <RouterLink :to="{ name: 'surah' }"
-        ><p class="text-sm text-gray-500">/ Daftar Surah</p>
-      </RouterLink>
-      <p class="text-sm font-semibold text-primary">/ Surah</p>
-    </div>
+    <BaseBreadcrumb v-if="!minimizeStore.isFocusMode" :items="breadcrumbs" />
     <FetchLoading v-if="isLoading" />
     <FetchError v-else-if="errorMessage" />
 
