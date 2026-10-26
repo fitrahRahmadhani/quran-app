@@ -1,6 +1,6 @@
 <script setup>
-import SurahCard from '@/components/surahs/SurahCard.vue'
 import SurahList from '@/components/surahs/SurahList.vue'
+import BaseBreadcrumb from '@/components/ui/BaseBreadcrumb.vue'
 import BaseTitle from '@/components/ui/BaseTitle.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
@@ -47,6 +47,16 @@ const juzAlQuran = [
   },
 ]
 
+const breadcrumbs = [
+  {
+    label: 'Beranda',
+    to: { name: 'beranda' },
+  },
+  {
+    label: 'Daftar Juz',
+  },
+]
+
 const surahs = ref([])
 const loading = ref(true)
 const error = ref(null)
@@ -73,13 +83,7 @@ const juzList = computed(() => {
 
 <template>
   <DefaultLayout>
-    <div class="flex gap-2 mb-6">
-      <RouterLink :to="{ name: 'beranda' }">
-        <p class="text-sm text-gray-500">Beranda</p>
-      </RouterLink>
-      <p class="text-sm font-semibold text-primary">/ Daftar Juz</p>
-    </div>
-
+    <BaseBreadcrumb :items="breadcrumbs" />
     <BaseTitle :title="'Daftar Juz'" />
 
     <div class="my-6">
