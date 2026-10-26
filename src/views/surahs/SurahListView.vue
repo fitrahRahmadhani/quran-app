@@ -1,5 +1,4 @@
 <script setup>
-import SurahCard from '@/components/surahs/SurahCard.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { Search } from '@lucide/vue'
 import { computed, onMounted, ref } from 'vue'
