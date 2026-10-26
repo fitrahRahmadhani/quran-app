@@ -1,6 +1,7 @@
 <script setup>
 import SurahAmin from '@/components/surahs/SurahAmin.vue'
 import SurahBismillah from '@/components/surahs/SurahBismillah.vue'
+import SurahHeader from '@/components/surahs/SurahHeader.vue'
 import SurahNav from '@/components/surahs/SurahNav.vue'
 import BaseBreadcrumb from '@/components/ui/BaseBreadcrumb.vue'
 import FetchError from '@/components/ui/FetchError.vue'
@@ -259,42 +260,15 @@ watch(activeAudio, (key) => {
     <FetchError v-else-if="errorMessage" />
 
     <div v-else class="w-full">
-      <div
-        class="w-full h-fit relative flex flex-col bg-primary rounded-3xl overflow-hidden p-5 sm:p-8 gap-6 sm:gap-8"
-      >
-        <div class="flex justify-between items-center gap-4">
-          <div class="min-w-0">
-            <p class="text-secondary text-2xl sm:text-3xl font-semibold">{{ surah.namaLatin }}</p>
-            <p class="text-accent/50 text-sm sm:text-base">
-              {{ surah.arti }} • {{ surah.tempatTurun }} • {{ surah.jumlahAyat }} Ayat
-            </p>
-          </div>
-          <p
-            dir="rtl"
-            lang="ar"
-            class="text-secondary text-4xl sm:text-5xl lg:text-6xl font-quran self-start shrink-0"
-          >
-            {{ surah.nama }}
-          </p>
-        </div>
-        <div class="flex items-center">
-          <button
-            type="button"
-            class="bg-secondary shrink-0 py-2 px-4 font-semibold rounded-full text-primary text-sm sm:text-base cursor-pointer"
-            @click="togglePlayer('full', surah.audioFull[qari])"
-          >
-            <div v-if="!isKeyPlaying('full')" class="flex gap-2 items-center">
-              <Play :size="18" :stroke-width="2.5" />
-              Putar Surah
-            </div>
-            <div v-else class="flex gap-2 items-center">
-              <Pause :size="18" :stroke-width="2.5" />
-              Jeda
-            </div>
-          </button>
-        </div>
-        <div class="w-40 h-40 rounded-full absolute -top-10 -right-10 bg-white/10"></div>
-      </div>
+      <SurahHeader
+        :namaLatin="surah.namaLatin"
+        :arti="surah.arti"
+        :tempatTurun="surah.tempatTurun"
+        :jumlahAyat="surah.jumlahAyat"
+        :nama="surah.nama"
+        :isPlaying="isKeyPlaying('full')"
+        @play="togglePlayer('full', surah.audioFull[qari])"
+      />
 
       <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 mt-6 lg:mt-8">
         <div
@@ -505,7 +479,7 @@ watch(activeAudio, (key) => {
           <div
             v-if="activeAudio !== null"
             class="sticky z-30 mt-8 mr-16 lg:mr-0 flex flex-col gap-3 bg-white p-4 rounded-2xl shadow-xl"
-            :class="minimizeStore.isFocusMode ? 'bottom-6 ' : 'bottom-24 lg:bottom-6'"
+            :class="minimizeStore.isFocusMode ? 'bottom-6 ' : 'bottom-24 md:bottom-6 lg:bottom-6'"
           >
             <div class="flex items-center gap-4">
               <div class="flex-1 min-w-0 flex flex-col">
