@@ -5,16 +5,15 @@ import SurahBismillah from '@/components/surahs/SurahBismillah.vue'
 import SurahHeader from '@/components/surahs/SurahHeader.vue'
 import SurahNav from '@/components/surahs/SurahNav.vue'
 import SurahPlayer from '@/components/surahs/SurahPlayer.vue'
+import SurahSettings from '@/components/surahs/SurahSettings.vue'
 import BaseBreadcrumb from '@/components/ui/BaseBreadcrumb.vue'
 import FetchError from '@/components/ui/FetchError.vue'
 import FetchLoading from '@/components/ui/FetchLoading.vue'
-import SelectDropdown from '@/components/ui/SelectDropdown.vue'
-import ToggleSwitch from '@/components/ui/ToggleSwitch.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { quranApi } from '@/services/quranApi'
 import { useBookmark } from '@/stores/bookmark'
 import { useMinimize } from '@/stores/minimize'
-import { Expand, Minimize, Minus, Plus, Settings2 } from '@lucide/vue'
+import { Expand, Minimize } from '@lucide/vue'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -33,6 +32,8 @@ const audio = new Audio()
 const activeAudio = ref(null)
 const isPlaying = ref(false)
 const qari = ref('01')
+const arabicTextSize = ref(1)
+const translateTextSize = ref(1)
 const qariOptions = [
   { value: '01', label: 'Abdullah Al-Juhany' },
   { value: '02', label: 'Abdul Muhsin Al-Qasim' },
@@ -41,8 +42,6 @@ const qariOptions = [
   { value: '05', label: 'Misyari Rasyid Al-Afasy' },
   { value: '06', label: 'Yasser-Al-Dosari' },
 ]
-
-const showSettings = ref(false)
 
 const arabicTextSizeList = [
   { name: 'Kecil', class: 'text-2xl sm:text-3xl lg:text-4xl' },
@@ -54,8 +53,6 @@ const translateTextSizeList = [
   { name: 'Sedang', class: 'text-base' },
   { name: 'Besar', class: 'text-lg' },
 ]
-const arabicTextSize = ref(1)
-const translateTextSize = ref(1)
 
 const currentTime = ref(0)
 const duration = ref(0)
@@ -82,18 +79,6 @@ const isActive = (index) => {
   return activeAudio.value === index || route.hash === `#ayat-${ayat.nomorAyat}`
 }
 const isKeyPlaying = (key) => activeAudio.value === key && isPlaying.value
-
-function changeArabicTextSize(step) {
-  const next = arabicTextSize.value + step
-  if (next < 0 || next >= arabicTextSizeList.length) return
-  arabicTextSize.value = next
-}
-
-function changeTranslateTextSize(step) {
-  const next = translateTextSize.value + step
-  if (next < 0 || next >= translateTextSizeList.length) return
-  translateTextSize.value = next
-}
 
 function toggleBookmark(ayat) {
   bookmarkStore.toggleBookmark({
@@ -186,7 +171,6 @@ async function fetchSurah(id) {
     errorMessage.value = e.message
   } finally {
     isLoading.value = false
-    breadcrumbs.push({ label: surah.value.nama })
   }
 }
 
@@ -283,101 +267,17 @@ watch(activeAudio, (key) => {
             </p>
           </button>
 
-          <div class="lg:w-full" :class="minimizeStore.isFocusMode ? 'lg:hidden' : ''">
-            <div
-              v-if="showSettings"
-              class="fixed inset-0 bg-black/20 lg:hidden"
-              @click="showSettings = false"
-            ></div>
-
-            <button
-              type="button"
-              aria-label="Pengaturan baca"
-              class="relative size-12 flex items-center justify-center rounded-full bg-primary/80 text-white shadow-lg cursor-pointer lg:hidden"
-              @click="showSettings = !showSettings"
-            >
-              <Settings2 :size="22" />
-            </button>
-
-            <div
-              :class="showSettings ? 'flex' : 'hidden lg:flex'"
-              class="absolute bottom-14 right-0 w-72 max-w-[calc(100vw-2rem)] flex-col gap-4 rounded-2xl bg-white p-4 shadow-xl lg:static lg:w-full lg:max-w-none lg:shadow-none"
-            >
-              <div class="pb-4 border-b border-gray-200">
-                <p class="font-semibold text-primary">Pengaturan Baca</p>
-                <p class="text-xs text-gray-500">Sesuaikan kenyamananmu</p>
-              </div>
-
-              <div class="space-y-2">
-                <p class="text-sm font-semibold text-primary">Ukuran teks arab</p>
-                <div
-                  class="flex items-center justify-between p-2 bg-primary/10 rounded-lg text-primary"
-                >
-                  <button
-                    @click="changeArabicTextSize(-1)"
-                    :disabled="arabicTextSize === 0"
-                    class="flex items-center text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    A<Minus :size="14" />
-                  </button>
-                  <p class="text-sm font-semibold">{{ arabicTextSizeList[arabicTextSize].name }}</p>
-                  <button
-                    @click="changeArabicTextSize(1)"
-                    :disabled="arabicTextSize === arabicTextSizeList.length - 1"
-                    class="flex items-center font-semibold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    A<Plus :size="14" :stroke-width="3" />
-                  </button>
-                </div>
-              </div>
-
-              <div class="space-y-2">
-                <p class="text-sm font-semibold text-primary">Ukuran terjemahan</p>
-                <div
-                  class="flex items-center justify-between p-2 bg-primary/10 rounded-lg text-primary"
-                >
-                  <button
-                    @click="changeTranslateTextSize(-1)"
-                    :disabled="translateTextSize === 0"
-                    class="flex items-center text-sm cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    A<Minus :size="14" />
-                  </button>
-                  <p class="text-sm font-semibold">
-                    {{ translateTextSizeList[translateTextSize].name }}
-                  </p>
-                  <button
-                    @click="changeTranslateTextSize(1)"
-                    :disabled="translateTextSize === translateTextSizeList.length - 1"
-                    class="flex items-center font-semibold cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    A<Plus :size="14" :stroke-width="3" />
-                  </button>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm font-semibold text-primary">Terjemahan</p>
-                  <p class="text-xs text-gray-500">Bahasa Indonesia</p>
-                </div>
-                <ToggleSwitch v-model="indonesianTranslate" />
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-sm font-semibold text-primary">Transliterasi</p>
-                  <p class="text-xs text-gray-500">Tampilkan teks Latin</p>
-                </div>
-                <ToggleSwitch v-model="transliteration" />
-              </div>
-
-              <div class="space-y-2">
-                <p class="text-sm font-semibold text-primary">Qori</p>
-                <SelectDropdown v-model="qari" :options="qariOptions" />
-              </div>
-            </div>
-          </div>
+          <SurahSettings
+            v-model:arabicTextSize="arabicTextSize"
+            v-model:translateTextSize="translateTextSize"
+            v-model:indonesianTranslate="indonesianTranslate"
+            v-model:transliteration="transliteration"
+            v-model:qari="qari"
+            :isFocusMode="minimizeStore.isFocusMode"
+            :arabicTextSizeList="arabicTextSizeList"
+            :translateTextSizeList="translateTextSizeList"
+            :qariOptions="qariOptions"
+          />
         </div>
 
         <div class="w-full min-w-0">
@@ -412,7 +312,7 @@ watch(activeAudio, (key) => {
           <SurahPlayer
             v-if="activeAudio !== null"
             :isPlaying="isPlaying"
-            :isFocusMode="isFocusMode"
+            :isFocusMode="minimizeStore.isFocusMode"
             :surahName="surah.namaLatin"
             :nowPlayingLabel="nowPlayingLabel"
             :speed="speed"

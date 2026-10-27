@@ -18,7 +18,6 @@ const emits = defineEmits(['skip', 'toggle', 'cycleSpeed', 'seek'])
 
 <template>
   <div
-    v-if="activeAudio !== null"
     class="sticky z-30 mt-8 mr-16 lg:mr-0 flex flex-col gap-3 bg-white p-4 rounded-2xl shadow-xl"
     :class="isFocusMode ? 'bottom-6 ' : 'bottom-24 md:bottom-6 lg:bottom-6'"
   >

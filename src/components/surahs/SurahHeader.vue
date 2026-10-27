@@ -5,7 +5,7 @@ const props = defineProps({
   namaLatin: String,
   arti: String,
   tempatTurun: String,
-  jumlahAyat: String,
+  jumlahAyat: Number,
   nama: String,
   isPlaying: Boolean,
 })
