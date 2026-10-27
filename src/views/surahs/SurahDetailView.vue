@@ -1,5 +1,6 @@
 <script setup>
 import SurahAmin from '@/components/surahs/SurahAmin.vue'
+import SurahAyat from '@/components/surahs/SurahAyat.vue'
 import SurahBismillah from '@/components/surahs/SurahBismillah.vue'
 import SurahHeader from '@/components/surahs/SurahHeader.vue'
 import SurahNav from '@/components/surahs/SurahNav.vue'
@@ -13,10 +14,9 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { quranApi } from '@/services/quranApi'
 import { useBookmark } from '@/stores/bookmark'
 import { useMinimize } from '@/stores/minimize'
-import { toArabicNumber } from '@/utils/formatText'
-import { Bookmark, Expand, Minimize, Minus, Pause, Play, Plus, Settings2 } from '@lucide/vue'
+import { Expand, Minimize, Minus, Plus, Settings2 } from '@lucide/vue'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const minimizeStore = useMinimize()
 const bookmarkStore = useBookmark()
@@ -384,81 +384,22 @@ watch(activeAudio, (key) => {
           <SurahBismillah />
 
           <div class="mt-8 sm:mt-20 divide-y divide-primary/20">
-            <div
-              class="py-6 sm:py-8 px-3 sm:px-4 transition-colors"
-              :class="[
-                isActive(index) ? 'bg-primary/10' : '',
-                minimizeStore.isFocusMode ? 'scroll-mt-6' : 'scroll-mt-28',
-              ]"
+            <SurahAyat
               v-for="(ayat, index) in surah.ayat"
               :key="ayat.nomorAyat"
               :id="`ayat-${ayat.nomorAyat}`"
-            >
-              <p
-                dir="rtl"
-                lang="ar"
-                class="leading-quran font-quran text-gray-800"
-                :class="arabicTextSizeList[arabicTextSize].class"
-              >
-                {{ ayat.teksArab }}
-                <span class="text-primary"> &#x06DD;{{ toArabicNumber(ayat.nomorAyat) }}</span>
-              </p>
-              <p v-if="transliteration" class="mt-6 sm:mt-8 text-primary text-sm sm:text-base">
-                {{ ayat.teksLatin }}
-              </p>
-              <p
-                v-if="indonesianTranslate"
-                class="mt-2"
-                :class="translateTextSizeList[translateTextSize].class"
-              >
-                {{ ayat.teksIndonesia }}
-              </p>
-              <div class="mt-2 flex items-center">
-                <button
-                  type="button"
-                  :aria-label="
-                    bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)
-                      ? 'Hapus bookmark'
-                      : 'Tambah bookmark'
-                  "
-                  :aria-pressed="bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)"
-                  class="flex items-center gap-1 shrink-0 font-semibold cursor-pointer"
-                  :class="
-                    bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)
-                      ? 'text-white bg-primary rounded-xl px-2 py-2'
-                      : 'text-primary/50 pr-1 py-1'
-                  "
-                  @click="toggleBookmark(ayat)"
-                >
-                  <Bookmark
-                    :size="18"
-                    :stroke-width="2.5"
-                    :fill="
-                      bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)
-                        ? 'currentColor'
-                        : 'none'
-                    "
-                  />
-                  <span
-                    class="text-xs"
-                    v-if="bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)"
-                    >Hapus Bookmark</span
-                  >
-                </button>
-                <button
-                  type="button"
-                  class="shrink-0 p-1 font-semibold text-primary/50 cursor-pointer"
-                  @click="togglePlayer(index, ayat.audio[qari])"
-                >
-                  <div v-if="!isKeyPlaying(index)" class="flex gap-2 items-center">
-                    <Play :size="18" :stroke-width="2.5" />
-                  </div>
-                  <div v-else class="flex gap-2 items-center">
-                    <Pause :size="18" :stroke-width="2.5" />
-                  </div>
-                </button>
-              </div>
-            </div>
+              :isActive="isActive(index)"
+              :isFocusMode="minimizeStore.isFocusMode"
+              :ayat="ayat"
+              :arabicClass="arabicTextSizeList[arabicTextSize].class"
+              :translateClass="translateTextSizeList[translateTextSize].class"
+              :transliteration="transliteration"
+              :indonesianTranslate="indonesianTranslate"
+              :bookmarked="bookmarkStore.isBookmarked(surah.nomor, ayat.nomorAyat)"
+              :isPlaying="isKeyPlaying(index)"
+              @bookmark="toggleBookmark(ayat)"
+              @play="togglePlayer(index, ayat.audio[qari])"
+            />
           </div>
 
           <SurahAmin />
