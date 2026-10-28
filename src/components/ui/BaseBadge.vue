@@ -7,7 +7,7 @@ const props = defineProps({
 
 <template>
   <button
-    id="{{ id }}"
+    :id="props.id"
     class="text-sm border border-primary/20 font-medium py-2 px-4 text-primary bg-primary/10 rounded-full cursor-pointer"
   >
     {{ title }}
