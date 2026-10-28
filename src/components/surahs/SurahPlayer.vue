@@ -114,7 +114,7 @@ const emits = defineEmits(['skip', 'toggle', 'cycleSpeed', 'seek'])
 
     <div class="flex items-center gap-3 text-xs text-gray-500">
       <span class="w-9 text-right tabular-nums">{{ formatTime(currentTime) }}</span>
-      <div class="flex-1 py-2 cursor-pointer" @click="emits('seek')">
+      <div class="flex-1 py-2 cursor-pointer" @click="emits('seek', $event)">
         <div class="h-1.5 rounded-full bg-primary/20 overflow-hidden">
           <div class="h-full bg-primary" :style="{ width: progress + '%' }"></div>
         </div>

@@ -1,3 +1,7 @@
+<script setup>
+import { TriangleAlert } from '@lucide/vue'
+</script>
+
 <template>
   <div
     class="flex flex-col items-center text-center gap-4 mt-12 p-6 sm:p-8 bg-white border border-red-100 rounded-3xl"
