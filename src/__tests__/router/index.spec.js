@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import router from '@/router'
+import { SITE_URL } from '@/utils/seo'
 import BerandaView from '@/views/BerandaView.vue'
 import JuzListView from '@/views/juz/JuzListView.vue'
 import SurahDetailView from '@/views/surahs/SurahDetailView.vue'
@@ -31,5 +32,42 @@ describe('router', () => {
     expect(router.resolve('/surah/114').name).toBe('surah-read')
     expect(router.resolve('/surah/114').params.id).toBe('114')
     expect(router.resolve('/juz').name).toBe('juz')
+  })
+
+  describe('SEO per halaman', () => {
+    const robots = () => document.head.querySelector('meta[name="robots"]').content
+    const canonical = () => document.head.querySelector('link[rel="canonical"]').href
+
+    beforeEach(() => {
+      document.head.innerHTML = ''
+    })
+
+    it('Beranda memakai judul default dan canonical "/"', async () => {
+      await router.push('/surah')
+      await router.push('/')
+      expect(document.title).toBe('Quran Online - Baca Al-Qur’an, Latin & Terjemahan Indonesia')
+      expect(canonical()).toBe(`${SITE_URL}/`)
+    })
+
+    it('Daftar Juz dan Daftar Surah punya judul unik', async () => {
+      await router.push('/juz')
+      expect(document.title).toContain('Daftar 30 Juz')
+      await router.push('/surah')
+      expect(document.title).toContain('Daftar 114 Surah')
+    })
+
+    it('canonical tidak menyertakan query string dan hasil pencarian di-noindex', async () => {
+      await router.push('/surah')
+      expect(robots()).toBe('index, follow')
+
+      await router.push('/surah?q=yasin')
+      expect(canonical()).toBe(`${SITE_URL}/surah`)
+      expect(robots()).toBe('noindex, follow')
+    })
+
+    it('halaman surah memakai canonical dengan id surah', async () => {
+      await router.push('/surah/36')
+      expect(canonical()).toBe(`${SITE_URL}/surah/36`)
+    })
   })
 })

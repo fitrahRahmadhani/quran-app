@@ -117,6 +117,36 @@ describe('SurahDetailView', () => {
     })
   })
 
+  describe('SEO', () => {
+    it('mengisi title, description, dan canonical dari data surah', async () => {
+      await factory({ path: '/surah/1' })
+      expect(document.title).toBe(
+        'Surat Al-Fatihah (Pembukaan) - Baca Online, Latin & Terjemahan | Quran',
+      )
+      const description = document.head.querySelector('meta[name="description"]').content
+      expect(description).toContain('Surat Al-Fatihah')
+      expect(description).toContain('3 ayat')
+      expect(description).toContain('Mekah')
+      expect(document.head.querySelector('link[rel="canonical"]').href).toMatch(/\/surah\/1$/)
+    })
+
+    it('menyertakan breadcrumb JSON-LD tiga tingkat', async () => {
+      await factory({ path: '/surah/1' })
+      const data = JSON.parse(document.head.querySelector('script[data-seo="breadcrumb"]').textContent)
+      expect(data.itemListElement.map((i) => i.name)).toEqual([
+        'Beranda',
+        'Daftar Surah',
+        'Surat Al-Fatihah',
+      ])
+    })
+
+    it('judul surah tampil sebagai satu-satunya h1', async () => {
+      const { wrapper } = await factory()
+      expect(wrapper.findAll('h1')).toHaveLength(1)
+      expect(wrapper.get('h1').text()).toBe('Al-Fatihah')
+    })
+  })
+
   /* ======================= Konten ======================= */
   describe('konten', () => {
     it('menampilkan header surah', async () => {
@@ -305,6 +335,7 @@ describe('SurahDetailView', () => {
 
     it('klik ayat yang sedang diputar menjeda audio', async () => {
       const { wrapper } = await factory()
+      audio().pause.mockClear() // pause() sempat dipanggil saat inisialisasi
       await clickAyatPlay(wrapper, 0)
       await clickAyatPlay(wrapper, 0)
 
@@ -337,6 +368,7 @@ describe('SurahDetailView', () => {
 
     it('tombol toggle di player menjeda dan melanjutkan', async () => {
       const { wrapper } = await factory()
+      audio().pause.mockClear() // pause() sempat dipanggil saat inisialisasi
       await clickAyatPlay(wrapper, 0)
 
       await playerBtn(wrapper, 'Jeda').trigger('click')
@@ -446,8 +478,28 @@ describe('SurahDetailView', () => {
       expect(audio().playbackRate).toBe(1.25)
     })
 
-    // Lihat catatan di SurahPlayer.spec.js: emit('seek') tanpa event membuat seek() error.
-    it.todo('seek mengubah currentTime sesuai posisi klik pada progress bar')
+    it('seek mengubah currentTime sesuai posisi klik pada progress bar', async () => {
+      const { wrapper } = await factory()
+      await clickAyatPlay(wrapper, 0)
+      loadMetadata(100)
+
+      const bar = player(wrapper).get('.flex-1.py-2')
+      bar.element.getBoundingClientRect = () => ({ left: 10, width: 200 })
+
+      await bar.trigger('click', { clientX: 60 }) // (60 - 10) / 200 = 25%
+      expect(audio().currentTime).toBe(25)
+
+      await bar.trigger('click', { clientX: 1000 }) // dibatasi 100%
+      expect(audio().currentTime).toBe(100)
+    })
+
+    it('seek tidak berefek bila durasi belum diketahui', async () => {
+      const { wrapper } = await factory()
+      await clickAyatPlay(wrapper, 0)
+      audio().currentTime = 7
+      await player(wrapper).get('.flex-1.py-2').trigger('click', { clientX: 50 })
+      expect(audio().currentTime).toBe(7)
+    })
   })
 
   /* ======================= Auto-lanjut ======================= */

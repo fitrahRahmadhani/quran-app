@@ -19,7 +19,7 @@ const emits = defineEmits(['play'])
   >
     <div class="flex justify-between items-center gap-4">
       <div class="min-w-0">
-        <p class="text-secondary text-2xl sm:text-3xl font-semibold">{{ props.namaLatin }}</p>
+        <h1 class="text-secondary text-2xl sm:text-3xl font-semibold">{{ props.namaLatin }}</h1>
         <p class="text-accent/50 text-sm sm:text-base">
           {{ props.arti }} • {{ props.tempatTurun }} • {{ props.jumlahAyat }} Ayat
         </p>

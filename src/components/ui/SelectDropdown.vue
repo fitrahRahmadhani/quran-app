@@ -107,7 +107,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
       <ul
         v-if="isOpen"
         role="listbox"
-        class="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
+        class="absolute bottom-0 z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white p-1 shadow-lg"
       >
         <li
           v-for="(option, i) in options"

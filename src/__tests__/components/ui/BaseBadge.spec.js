@@ -16,6 +16,8 @@ describe('BaseBadge', () => {
     expect(onClick).toHaveBeenCalledTimes(1)
   })
 
-  // Saat ini template memakai id="{{ id }}" (string literal, bukan binding).
-  it.todo('atribut id mengikuti prop id (gunakan :id="id")')
+  it('atribut id mengikuti prop id', () => {
+    const wrapper = mount(BaseBadge, { props: { id: 'surah-36', title: 'Yasin' } })
+    expect(wrapper.attributes('id')).toBe('surah-36')
+  })
 })

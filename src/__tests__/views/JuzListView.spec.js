@@ -43,7 +43,7 @@ describe('JuzListView', () => {
 
   it('judul halaman "Daftar Juz"', async () => {
     const wrapper = await factory()
-    expect(wrapper.get('h2').text()).toBe('Daftar Juz')
+    expect(wrapper.get('h1').text()).toBe('Daftar Juz')
   })
 
   it('menampilkan 30 juz berurutan', async () => {
