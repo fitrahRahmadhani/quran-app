@@ -98,6 +98,20 @@ describe('BerandaView', () => {
     })
   })
 
+  describe('struktur heading & aksesibilitas', () => {
+    it('memiliki satu h1 berisi headline utama', async () => {
+      const { wrapper } = await factory()
+      expect(wrapper.findAll('h1')).toHaveLength(1)
+      expect(wrapper.get('h1').text()).toContain('Tempat untuk Kembali')
+      expect(wrapper.get('h1').text()).toContain('Kapan Pun Kamu Butuhkan')
+    })
+
+    it('kolom pencarian punya label aksesibel', async () => {
+      const { wrapper } = await factory()
+      expect(wrapper.get('#search-bar').attributes('aria-label')).toBe('Cari surah')
+    })
+  })
+
   describe('rekomendasi surah populer', () => {
     it('menampilkan 4 badge', async () => {
       const { wrapper } = await factory()
@@ -107,6 +121,12 @@ describe('BerandaView', () => {
         'Yasin',
         "Al-Waqi'ah",
       ])
+    })
+
+    it('badge memakai id string unik tanpa warning prop', async () => {
+      const { wrapper } = await factory()
+      const ids = wrapper.findAllComponents(BaseBadge).map((b) => b.attributes('id'))
+      expect(ids).toEqual(['suggestion-1', 'suggestion-18', 'suggestion-36', 'suggestion-56'])
     })
 
     it('klik badge mengisi kolom pencarian', async () => {

@@ -13,6 +13,7 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import { quranApi } from '@/services/quranApi'
 import { useBookmark } from '@/stores/bookmark'
 import { useMinimize } from '@/stores/minimize'
+import { setSeo } from '@/utils/seo'
 import { Expand, Minimize } from '@lucide/vue'
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -162,11 +163,27 @@ audio.onended = () => {
   duration.value = 0
 }
 
+function applySeo(id) {
+  const { namaLatin, nama, arti, jumlahAyat, tempatTurun } = surah.value
+  const path = `/surah/${id}`
+  setSeo({
+    title: `Surat ${namaLatin} (${arti}) - Baca Online, Latin & Terjemahan`,
+    description: `Baca Surat ${namaLatin} (${nama}) lengkap dengan teks Arab, latin, dan terjemahan Bahasa Indonesia. Surat ${arti} terdiri dari ${jumlahAyat} ayat dan diturunkan di ${tempatTurun}.`,
+    path,
+    breadcrumbs: [
+      { name: 'Beranda', path: '/' },
+      { name: 'Daftar Surah', path: '/surah' },
+      { name: `Surat ${namaLatin}`, path },
+    ],
+  })
+}
+
 async function fetchSurah(id) {
   isLoading.value = true
   errorMessage.value = ''
   try {
     surah.value = await quranApi.getSurah(id)
+    applySeo(id)
   } catch (e) {
     errorMessage.value = e.message
   } finally {

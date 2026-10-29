@@ -5,7 +5,11 @@ import { quranApi } from '@/services/quranApi'
 vi.mock('axios', () => ({ default: { get: vi.fn() } }))
 
 describe('quranApi', () => {
-  beforeEach(() => vi.mocked(axios.get).mockReset())
+  beforeEach(() => {
+    // Gunakan block body: nilai kembalian beforeEach yang berupa fungsi dianggap
+    // sebagai cleanup oleh Vitest dan akan dipanggil setelah test selesai.
+    vi.mocked(axios.get).mockReset()
+  })
 
   describe('getAllSurah', () => {
     it('memanggil endpoint daftar surah dan mengembalikan res.data.data', async () => {

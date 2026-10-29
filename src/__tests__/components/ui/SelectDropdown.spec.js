@@ -118,20 +118,32 @@ describe('SelectDropdown', () => {
       expect(wrapper.find('[role="listbox"]').exists()).toBe(false)
     })
 
+    // defineModel tidak meng-emit bila nilai yang dipilih sama dengan nilai saat ini,
+    // jadi batas dites dari opsi tengah: dua kali tekan harus berhenti di ujung.
     it('ArrowUp tidak melewati opsi pertama', async () => {
-      const wrapper = factory()
-      await key(wrapper, 'Enter')
-      await key(wrapper, 'ArrowUp')
+      const wrapper = factory({ modelValue: 'b' })
+      await key(wrapper, 'Enter') // buka, aktif di Beta
+      await key(wrapper, 'ArrowUp') // Alpha
+      await key(wrapper, 'ArrowUp') // tetap Alpha
       await key(wrapper, 'Enter')
       expect(lastEmit(wrapper)).toEqual(['a'])
     })
 
     it('ArrowDown tidak melewati opsi terakhir', async () => {
-      const wrapper = factory({ modelValue: 'c' })
-      await key(wrapper, 'Enter')
-      await key(wrapper, 'ArrowDown')
+      const wrapper = factory({ modelValue: 'b' })
+      await key(wrapper, 'Enter') // buka, aktif di Beta
+      await key(wrapper, 'ArrowDown') // Gamma
+      await key(wrapper, 'ArrowDown') // tetap Gamma
       await key(wrapper, 'Enter')
       expect(lastEmit(wrapper)).toEqual(['c'])
+    })
+
+    it('memilih opsi yang sudah terpilih hanya menutup daftar tanpa emit', async () => {
+      const wrapper = factory()
+      await key(wrapper, 'Enter')
+      await key(wrapper, 'Enter')
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+      expect(wrapper.find('[role="listbox"]').exists()).toBe(false)
     })
 
     it.each(['Escape', 'Tab'])('"%s" menutup daftar', async (k) => {

@@ -57,7 +57,7 @@ describe('SurahListView', () => {
 
     it('judul default "Daftar Surah" tanpa query', async () => {
       const { wrapper } = await factory()
-      expect(wrapper.get('h2').text()).toBe('Daftar Surah')
+      expect(wrapper.get('h1').text()).toBe('Daftar Surah')
     })
 
     it('breadcrumb berisi Beranda dan Daftar Surah', async () => {
@@ -86,7 +86,7 @@ describe('SurahListView', () => {
 
     it('judul berubah menjadi hasil pencarian', async () => {
       const { wrapper } = await factory({ path: '/surah?q=yasin' })
-      expect(wrapper.get('h2').text()).toBe('Hasil pencarian "yasin"')
+      expect(wrapper.get('h1').text()).toBe('Hasil pencarian "yasin"')
     })
 
     it('mengisi kolom pencarian dari query', async () => {

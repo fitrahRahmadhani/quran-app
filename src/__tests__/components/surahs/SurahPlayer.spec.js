@@ -98,9 +98,13 @@ describe('SurahPlayer', () => {
       expect(wrapper.emitted('seek')).toHaveLength(1)
     })
 
-    // Komponen memanggil emits('seek') TANPA payload, sedangkan SurahDetailView.seek(event)
-    // membutuhkan event.currentTarget -> TypeError saat durasi sudah diketahui.
-    it.todo('seek meneruskan event klik (emits("seek", $event)) agar parent bisa menghitung posisi')
+    it('seek meneruskan event klik agar parent bisa menghitung posisi', async () => {
+      const wrapper = factory()
+      await wrapper.get('.flex-1.py-2').trigger('click', { clientX: 42 })
+      const [event] = wrapper.emitted('seek')[0]
+      expect(event).toBeInstanceOf(MouseEvent)
+      expect(event.clientX).toBe(42)
+    })
   })
 
   describe('posisi', () => {

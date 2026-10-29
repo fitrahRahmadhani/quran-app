@@ -15,9 +15,9 @@ const bookmarkStore = useBookmark()
 
 const suggestionSurahs = [
   { id: 1, title: 'Al-Fatihah' },
-  { id: 2, title: 'Al-Kahf' },
-  { id: 3, title: 'Yasin' },
-  { id: 4, title: "Al-Waqi'ah" },
+  { id: 18, title: 'Al-Kahf' },
+  { id: 36, title: 'Yasin' },
+  { id: 56, title: "Al-Waqi'ah" },
 ]
 
 const defaultSurahs = [
@@ -73,10 +73,10 @@ function handleSuggestion(value) {
 <template>
   <DefaultLayout>
     <div class="text-primary text-center space-y-2">
-      <h2 class="text-4xl mt-4 md:mt-12 lg:mt-2 md:text-5xl font-bold tracking-wide">
-        Tempat untuk Kembali,
-      </h2>
-      <h2 class="text-4xl md:text-5xl font-bold tracking-wide">Kapan Pun Kamu Butuhkan</h2>
+      <h1 class="text-4xl mt-4 md:mt-12 lg:mt-2 md:text-5xl font-bold tracking-wide">
+        <span class="block">Tempat untuk Kembali,</span>
+        <span class="block mt-2">Kapan Pun Kamu Butuhkan</span>
+      </h1>
       <p class="text-lg mt-4">
         Temukan surah, baca ayat, dan luangkan waktu untuk merenungkan maknanya
       </p>
@@ -101,6 +101,7 @@ function handleSuggestion(value) {
             type="text"
             class="w-full text-lg outline-none"
             placeholder="Cari surah..."
+            aria-label="Cari surah"
             @input="errorMessage = ''"
           />
         </div>
@@ -116,12 +117,12 @@ function handleSuggestion(value) {
         {{ errorMessage }}
       </p>
       <div class="space-y-2 mt-4">
-        <p class="text-sm font-semibold text-primary it">Rekomendasi Surah populer</p>
+        <p class="text-sm font-semibold text-primary">Rekomendasi Surah populer</p>
         <div class="flex gap-2 flex-wrap">
           <BaseBadge
             v-for="surah in suggestionSurahs"
             :key="surah.id"
-            :id="surah.id"
+            :id="`suggestion-${surah.id}`"
             :title="surah.title"
             @click="handleSuggestion(surah.title)"
           />
