@@ -1,6 +1,6 @@
 <script setup>
 import { formatTime } from '@/utils/formatText'
-import { Pause, Play } from '@lucide/vue'
+import { Pause, Play, X } from '@lucide/vue'
 
 const props = defineProps({
   isPlaying: Boolean,
@@ -13,7 +13,7 @@ const props = defineProps({
   duration: Number,
 })
 
-const emits = defineEmits(['skip', 'toggle', 'cycleSpeed', 'seek'])
+const emits = defineEmits(['skip', 'toggle', 'cycleSpeed', 'seek', 'stop'])
 </script>
 
 <template>
@@ -108,6 +108,13 @@ const emits = defineEmits(['skip', 'toggle', 'cycleSpeed', 'seek'])
           @click="$emit('cycleSpeed')"
         >
           {{ speed }}x
+        </button>
+
+        <button
+          @click="$emit('stop')"
+          class="text-gray-400 hover:text-gray-600 cursor-pointer transition duration-300"
+        >
+          <X :size="20" />
         </button>
       </div>
     </div>

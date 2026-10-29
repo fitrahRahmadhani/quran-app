@@ -138,6 +138,15 @@ function seek(event) {
   audio.currentTime = ratio * duration.value
 }
 
+function stop() {
+  audio.pause()
+  audio.currentTime = 0
+  isPlaying.value = false
+  activeAudio.value = null
+  currentTime.value = 0
+  duration.value = 0
+}
+
 audio.ontimeupdate = () => {
   currentTime.value = audio.currentTime
 }
@@ -340,6 +349,7 @@ watch(activeAudio, (key) => {
             @toggle="togglePlayback"
             @cycleSpeed="cycleSpeed"
             @seek="seek"
+            @stop="stop"
           />
         </div>
       </div>
